@@ -1,0 +1,33 @@
+{
+  "name": "integration",
+  "version": "1.0.0",
+  "description": "Integration  service",
+  "main": "index.js",
+  "scripts": {
+    "start": "node ./src/bin/www",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fakhrad/integration.git"
+  },
+  "keywords": [
+    "Content",
+    "contentservice",
+    "integration",
+    "dynamic"
+  ],
+  "author": "Fakhreddin Rezaei",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/fakhrad/integration/issues"
+  },
+  "homepage": "https://github.com/fakhrad/integration#readme",
+  "dependencies": {
+    "amqplib": "0.5.3",
+    "async": "2.6.2",
+    "cqrs-domain": "2.14.75",
+    "mongoose": "5.4.12",
+    "uniqid": "5.0.3"
+  }
+}
