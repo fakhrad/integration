@@ -28,6 +28,8 @@
     "async": "2.6.2",
     "cqrs-domain": "2.14.75",
     "mongoose": "5.4.12",
-    "uniqid": "5.0.3"
+    "uniqid": "5.0.3",
+    "uuid": "3.3.3",
+    "uuidv4": "5.0.1"
   }
 }

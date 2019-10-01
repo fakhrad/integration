@@ -1,10 +1,12 @@
 var amqp = require("amqplib/callback_api");
 const Spaces = require("./models/space");
-const ContentTypes = require("./models/contentType");
-const async = require("async");
-
+const Tokens = require("./models/token");
+const Contents = require("./models/content");
+const uuidv4 = require("uuid/v4");
 var db = require("./db/init-db");
-
+var EventEmitter = require("events");
+var async = require("async");
+const REPLY_QUEUE = "amq.rabbitmq.reply-to";
 var rabbitHost =
   process.env.RABBITMQ_HOST ||
   "amqp://gvgeetrh:6SyWQAxDCpcdg1S0Dc-Up0sUxfmBUVZU@chimpanzee.rmq.cloudamqp.com/gvgeetrh";
@@ -46,6 +48,14 @@ function whenConnected() {
     ch.on("close", function() {
       console.log("[AMQP] channel closed");
     });
+    // create an event emitter where rpc responses will be published by correlationId
+    ch.responseEmitter = new EventEmitter();
+    ch.responseEmitter.setMaxListeners(0);
+    ch.consume(
+      REPLY_QUEUE,
+      msg => ch.responseEmitter.emit(msg.properties.correlationId, msg.content),
+      { noAck: true }
+    );
     console.log("Client connected.");
     this.channel = ch;
 
@@ -79,11 +89,36 @@ function whenConnected() {
               "New content submitted." + msg.content.toString("utf8")
             );
             try {
-              Spaces.findById(req.body.data.sys.spaceId).exec((err, space) => {
-                if (space) {
-                } else {
-                }
-              });
+              switch (req.body.data.contentType) {
+                //Vam Separ loan
+                case "5d26e7e9375e9b001745e84e":
+                  async.parallel(
+                    {
+                      // sendnotif: function(callback) {
+                      //   Tokens.findOne({
+                      //     userId: req.body.data.fields.phoneNumber
+                      //   }).exec((err, token) => {
+                      //     if (err || !token) {
+                      //       console.log(
+                      //         "Token loading error or token not found" + err
+                      //       );
+                      //       callback(
+                      //         "Token loading error or token not found",
+                      //         undefined
+                      //       );
+                      //     }
+                      //     console.log(token);
+                      //     sendnotification(ch, token, req.body.data, callback);
+                      //   });
+                      // },
+                      sendtopartners: function(callback) {
+                        submittopartners(ch, req.body.data, callback);
+                      }
+                    },
+                    (error, results) => {}
+                  );
+                  break;
+              }
             } catch (ex) {
               console.log(ex);
             }
@@ -96,6 +131,97 @@ function whenConnected() {
     });
   });
 }
+
+var sendRPCMessage = (channel, message, rpcQueue) =>
+  new Promise(resolve => {
+    const correlationId = uuidv4();
+    // listen for the content emitted on the correlationId event
+    //channel.responseEmitter.once(correlationId, resolve);
+    channel.sendToQueue(rpcQueue, Buffer.from(JSON.stringify(message)));
+  });
+var sendnotification = function(broker, token, obj, callback) {
+  console.log("sending notification : " + token, JSON.stringify(obj));
+  if (token.deviceToken) {
+    sendRPCMessage(
+      broker,
+      {
+        body: {
+          device: token.deviceToken,
+          message: {},
+          data: {
+            type: "NEW_REQUEST"
+          }
+        }
+      },
+      "sendPushMessage"
+    ).then(result => {
+      var obj = JSON.parse(result.toString("utf8"));
+      if (!obj.success)
+        console.log(
+          "Push message not sent. Error code : " +
+            obj.error +
+            " response : " +
+            obj.data
+        );
+      else console.log("Push message successfully sent");
+    });
+  }
+  callback(undefined, obj);
+};
+
+var submittopartners = function(broker, obj, callback) {
+  Contents.find({
+    contentType: "5d3fc9b97029a500172c5c48",
+    "sys.spaceId": obj.sys.spaceId
+  })
+    .select("_id name")
+    .exec((err, cts) => {
+      if (err) {
+        callback(err, undefined);
+      } else {
+        for (i = 0; i < cts.length; i++) {
+          try {
+            var content = cts[i];
+            var fields = {};
+            fields.name = {
+              fa: obj.fields.name,
+              en: obj.fields.name
+            };
+            fields.stage = "5d6e8accc51a44001703df19";
+            fields.partnerid = content._id;
+            fields.requestid = obj._id;
+            var request = new Contents({
+              fields: fields,
+              contentType: "5d62814c0490c200171f0d71"
+            });
+            sendRPCMessage(
+              channel,
+              {
+                body: request,
+                userId: obj.sys.issuer,
+                spaceId: obj.sys.spaceId
+              },
+              "addcontent"
+            ).then(result => {
+              var obj = JSON.parse(result.toString("utf8"));
+              if (!obj.success) {
+                if (obj.error) {
+                  return res.status(500).json(obj);
+                }
+              } else {
+                //do mach making and submit to partners
+                res.status(201).json(obj.data);
+              }
+            });
+          } catch (ex) {
+            console.log(ex);
+          }
+        }
+      }
+    });
+
+  callback(undefined, obj);
+};
 start();
 
 db();
