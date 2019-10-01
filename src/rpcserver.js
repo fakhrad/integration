@@ -2,6 +2,7 @@ var amqp = require("amqplib/callback_api");
 const Spaces = require("./models/space");
 const Tokens = require("./models/token");
 const Contents = require("./models/content");
+const ContentTypes = require("./models/contentType");
 const uuidv4 = require("uuid/v4");
 var db = require("./db/init-db");
 var EventEmitter = require("events");
@@ -89,30 +90,62 @@ function whenConnected() {
               "New content submitted." + msg.content.toString("utf8")
             );
             try {
+              // ContentTypes.findById(req.body.contentType).exec((err, ctype) => {
+              //   if (err) {
+              //     console.log("Error loading contentType :" + err);
+              //   } else {
+              //     switch (ctype.templateId) {
+              //       case "requestform":
+              //         async.parallel(
+              //           {
+              //             approvereqeust: function(callback) {
+              //               approverequest(channel, req.body.data, callback);
+              //             },
+              //             sendtopartners: function(callback) {
+              //               submittopartners(ch, req.body.data, callback);
+              //             }
+              //           },
+              //           (error, results) => {}
+              //         );
+              //         break;
+              //         break;
+              //       case "quoteform":
+              //         break;
+              //     }
+              //   }
+              // });
               switch (req.body.data.contentType) {
                 //Vam Separ loan
                 case "5d26e7e9375e9b001745e84e":
                   async.parallel(
                     {
-                      // sendnotif: function(callback) {
-                      //   Tokens.findOne({
-                      //     userId: req.body.data.fields.phoneNumber
-                      //   }).exec((err, token) => {
-                      //     if (err || !token) {
-                      //       console.log(
-                      //         "Token loading error or token not found" + err
-                      //       );
-                      //       callback(
-                      //         "Token loading error or token not found",
-                      //         undefined
-                      //       );
-                      //     }
-                      //     console.log(token);
-                      //     sendnotification(ch, token, req.body.data, callback);
-                      //   });
-                      // },
+                      approvereqeust: function(callback) {
+                        changerequeststage(
+                          channel,
+                          req.body.data,
+                          req.body.data._id,
+                          "5d3fc2f77029a500172c5c3e",
+                          callback
+                        );
+                      },
                       sendtopartners: function(callback) {
                         submittopartners(ch, req.body.data, callback);
+                      }
+                    },
+                    (error, results) => {}
+                  );
+                  break;
+                case "5d3fc7397029a500172c5c46":
+                  async.parallel(
+                    {
+                      changerequesttoofferrecieved: function(callback) {
+                        changerequeststage(
+                          channel,
+                          req.body.data,
+                          req.body.data.fields.requestid,
+                          "5d3fc30a7029a500172c5c3f",
+                          callback
+                        );
                       }
                     },
                     (error, results) => {}
@@ -206,11 +239,12 @@ var submittopartners = function(broker, obj, callback) {
               var obj = JSON.parse(result.toString("utf8"));
               if (!obj.success) {
                 if (obj.error) {
-                  return res.status(500).json(obj);
+                  callback(err, undefined);
+                  return;
                 }
               } else {
                 //do mach making and submit to partners
-                res.status(201).json(obj.data);
+                callback(undefined, obj);
               }
             });
           } catch (ex) {
@@ -220,6 +254,39 @@ var submittopartners = function(broker, obj, callback) {
       }
     });
 
+  callback(undefined, obj);
+};
+
+var changerequeststage = function(channel, obj, objId, stage, callback) {
+  try {
+    sendRPCMessage(
+      channel,
+      {
+        body: {
+          id: objId,
+          fields: {
+            stage: stage
+          }
+        },
+        userId: obj.sys.issuer,
+        spaceId: obj.sys.spaceId
+      },
+      "partialupdatecontent"
+    ).then(result => {
+      var obj = JSON.parse(result.toString("utf8"));
+      if (!obj.success) {
+        if (obj.error) {
+          callback(err, undefined);
+          return;
+        }
+      } else {
+        //do mach making and submit to partners
+        callback(undefined, obj);
+      }
+    });
+  } catch (ex) {
+    console.log(ex);
+  }
   callback(undefined, obj);
 };
 start();
