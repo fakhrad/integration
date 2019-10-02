@@ -146,6 +146,15 @@ function whenConnected() {
                           "5d3fc30a7029a500172c5c3f",
                           callback
                         );
+                      },
+                      approveoffer: function(callback) {
+                        changestage(
+                          channel,
+                          req.body.data,
+                          req.body.data._id,
+                          "5d514934780b9c00170233e8",
+                          callback
+                        );
                       }
                     },
                     (error, results) => {}
@@ -258,6 +267,39 @@ var submittopartners = function(broker, obj, callback) {
 };
 
 var changerequeststage = function(channel, obj, objId, stage, callback) {
+  try {
+    sendRPCMessage(
+      channel,
+      {
+        body: {
+          id: objId,
+          fields: {
+            stage: stage
+          }
+        },
+        userId: obj.sys.issuer,
+        spaceId: obj.sys.spaceId
+      },
+      "partialupdatecontent"
+    ).then(result => {
+      var obj = JSON.parse(result.toString("utf8"));
+      if (!obj.success) {
+        if (obj.error) {
+          callback(err, undefined);
+          return;
+        }
+      } else {
+        //do mach making and submit to partners
+        callback(undefined, obj);
+      }
+    });
+  } catch (ex) {
+    console.log(ex);
+  }
+  callback(undefined, obj);
+};
+
+var changestage = function(channel, obj, objId, stage, callback) {
   try {
     sendRPCMessage(
       channel,
