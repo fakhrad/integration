@@ -259,6 +259,7 @@ var sendnotification = function(broker, token, obj, callback) {
 var submittopartners = function(broker, reqtype, stage, spoid, obj, callback) {
   Contents.find({
     contentType: reqtype,
+    status: "published",
     "sys.spaceId": obj.sys.spaceId
   })
     .select("_id name")
