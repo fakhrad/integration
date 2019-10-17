@@ -90,31 +90,8 @@ function whenConnected() {
               "New content submitted." + msg.content.toString("utf8")
             );
             try {
-              // ContentTypes.findById(req.body.contentType).exec((err, ctype) => {
-              //   if (err) {
-              //     console.log("Error loading contentType :" + err);
-              //   } else {
-              //     switch (ctype.templateId) {
-              //       case "requestform":
-              //         async.parallel(
-              //           {
-              //             approvereqeust: function(callback) {
-              //               approverequest(channel, req.body.data, callback);
-              //             },
-              //             sendtopartners: function(callback) {
-              //               submittopartners(ch, req.body.data, callback);
-              //             }
-              //           },
-              //           (error, results) => {}
-              //         );
-              //         break;
-              //         break;
-              //       case "quoteform":
-              //         break;
-              //     }
-              //   }
-              // });
               switch (req.body.data.contentType) {
+                //#region  Vam Separ
                 //Vam Separ loan
                 case "5d26e7e9375e9b001745e84e":
                   async.parallel(
@@ -129,12 +106,20 @@ function whenConnected() {
                         );
                       },
                       sendtopartners: function(callback) {
-                        submittopartners(ch, req.body.data, callback);
+                        submittopartners(
+                          ch,
+                          "5d3fc9b97029a500172c5c48",
+                          "5d6e8accc51a44001703df19",
+                          "5d62814c0490c200171f0d71",
+                          req.body.data,
+                          callback
+                        );
                       }
                     },
                     (error, results) => {}
                   );
                   break;
+                // VamSepar offer
                 case "5d3fc7397029a500172c5c46":
                   async.parallel(
                     {
@@ -160,6 +145,66 @@ function whenConnected() {
                     (error, results) => {}
                   );
                   break;
+                //#endregion
+                //#region  Startup space
+                //Deficated office
+                case "5cf7e7449916860017805408":
+                //Shared and private desk
+                case "5cfc95472606810017dca194":
+                ///Meeting Room
+                case "5cf7e7289916860017805407":
+                  async.parallel(
+                    {
+                      approvereqeust: function(callback) {
+                        changerequeststage(
+                          channel,
+                          req.body.data,
+                          req.body.data._id,
+                          "5d6b5db15b60dc0017c9511a",
+                          callback
+                        );
+                      },
+                      sendtopartners: function(callback) {
+                        submittopartners(
+                          ch,
+                          "5d4169c642afbf00179b0569",
+                          "assigned",
+                          "5d58df5a74c64b0017fb45d8",
+                          req.body.data,
+                          callback
+                        );
+                      }
+                    },
+                    (error, results) => {}
+                  );
+                  break;
+
+                case "5d35adc68e6e9a0017c28fcb":
+                  async.parallel(
+                    {
+                      changerequesttoofferrecieved: function(callback) {
+                        changerequeststage(
+                          channel,
+                          req.body.data,
+                          req.body.data.fields.requestid,
+                          "5d7e582415586f0017d4836c",
+                          callback
+                        );
+                      },
+                      approveoffer: function(callback) {
+                        changestage(
+                          channel,
+                          req.body.data,
+                          req.body.data._id,
+                          "5d7b968918a6400017ee1513",
+                          callback
+                        );
+                      }
+                    },
+                    (error, results) => {}
+                  );
+                  break;
+                //#endregion
               }
             } catch (ex) {
               console.log(ex);
@@ -211,9 +256,9 @@ var sendnotification = function(broker, token, obj, callback) {
   callback(undefined, obj);
 };
 
-var submittopartners = function(broker, obj, callback) {
+var submittopartners = function(broker, reqtype, stage, spoid, obj, callback) {
   Contents.find({
-    contentType: "5d3fc9b97029a500172c5c48",
+    contentType: reqtype,
     "sys.spaceId": obj.sys.spaceId
   })
     .select("_id name")
@@ -229,12 +274,12 @@ var submittopartners = function(broker, obj, callback) {
               fa: obj.fields.name,
               en: obj.fields.name
             };
-            fields.stage = "5d6e8accc51a44001703df19";
+            fields.stage = stage;
             fields.partnerid = content._id;
             fields.requestid = obj._id;
             var request = new Contents({
               fields: fields,
-              contentType: "5d62814c0490c200171f0d71"
+              contentType: spoid
             });
             sendRPCMessage(
               channel,
