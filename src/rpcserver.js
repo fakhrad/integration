@@ -165,9 +165,9 @@ function whenConnected() {
                         );
                       },
                       sendtopartners: function(callback) {
-                        submittopartners(
+                        submittopartners_ss(
                           ch,
-                          "5d4169c642afbf00179b0569",
+                          "5d358ebc8e6e9a0017c28fc9",
                           "assigned",
                           "5d58df5a74c64b0017fb45d8",
                           req.body.data,
@@ -262,11 +262,76 @@ var submittopartners = function(broker, reqtype, stage, spoid, obj, callback) {
     status: "published",
     "sys.spaceId": obj.sys.spaceId
   })
-    .select("_id name")
+    .select("_id name status")
     .exec((err, cts) => {
       if (err) {
         callback(err, undefined);
       } else {
+        console.log(cts);
+        for (i = 0; i < cts.length; i++) {
+          try {
+            var content = cts[i];
+            var fields = {};
+            fields.name = {
+              fa: obj.fields.name,
+              en: obj.fields.name
+            };
+            fields.stage = stage;
+            fields.partnerid = content._id;
+            fields.requestid = obj._id;
+            var request = new Contents({
+              fields: fields,
+              contentType: spoid
+            });
+            sendRPCMessage(
+              channel,
+              {
+                body: request,
+                userId: obj.sys.issuer,
+                spaceId: obj.sys.spaceId
+              },
+              "addcontent"
+            ).then(result => {
+              var obj = JSON.parse(result.toString("utf8"));
+              if (!obj.success) {
+                if (obj.error) {
+                  callback(err, undefined);
+                  return;
+                }
+              } else {
+                //do mach making and submit to partners
+                callback(undefined, obj);
+              }
+            });
+          } catch (ex) {
+            console.log(ex);
+          }
+        }
+      }
+    });
+
+  callback(undefined, obj);
+};
+var submittopartners_ss = function(
+  broker,
+  reqtype,
+  stage,
+  spoid,
+  obj,
+  callback
+) {
+  Contents.find({
+    contentType: "5d358ebc8e6e9a0017c28fc9",
+    status: "published",
+    "sys.spaceId": obj.sys.spaceId,
+    "fields.city": obj.fields.city
+  })
+    .select("_id name status")
+    .exec((err, cts) => {
+      if (err) {
+        callback(err, undefined);
+      } else {
+        console.log(cts);
         for (i = 0; i < cts.length; i++) {
           try {
             var content = cts[i];
