@@ -326,7 +326,7 @@ var submittopartners_ss = function(
     "sys.spaceId": obj.sys.spaceId,
     "fields.city": obj.fields.city
   })
-    .select("_id name status workingfields")
+    .select("_id name status")
     .exec((err, cts) => {
       if (err) {
         callback(err, undefined);
