@@ -335,15 +335,18 @@ var submittopartners_ss = function(
         for (i = 0; i < cts.length; i++) {
           try {
             var content = cts[i];
-            var wf = obj.fields.workinffield ? obj.fields.workinffield : [];
+            var wf = obj.fields.workingfield ? obj.fields.workingfield : [];
             var match = false;
             console.log(wf);
-            console.log(content.fields.workingfields);
-            if (content.fields.workingfields) {
-              for (i = 0; i < wf.length; i++) {
-                if (content.fields.workingfields.includes(wf[i])) match = true;
+            console.log(content);
+            if (content.fields) {
+              if (content.fields.workingfields) {
+                for (i = 0; i < wf.length; i++) {
+                  if (content.fields.workingfields.includes(wf[i]))
+                    match = true;
+                }
               }
-            }
+            } else console.log("content.fields is null");
             if (match) {
               var fields = {};
               fields.name = {
