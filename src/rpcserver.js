@@ -334,17 +334,18 @@ var submittopartners_ss = function(
         for (i = 0; i < cts.length; i++) {
           try {
             var content = cts[i];
-            var wf = obj.fields.workingfield ? obj.fields.workingfield : [];
-            var match = false;
-
-            if (content.fields) {
-              if (content.fields.workingfields) {
-                for (i = 0; i < wf.length; i++) {
-                  if (content.fields.workingfields.indexOf(wf[i]) != -1)
-                    match = true;
-                }
-              }
-            } else console.log("content.fields is null");
+            // var wf = obj.fields.workingfield ? obj.fields.workingfield : [];
+            var match = true;
+            // console.log(wf);
+            // if (content.fields) {
+            //   if (content.fields.workingfields) {
+            //     console.log(content.fields.workingfields);
+            //     for (i = 0; i < wf.length; i++) {
+            //       if (content.fields.workingfields.indexOf(wf[i]) != -1)
+            //         match = true;
+            //     }
+            //   }
+            // } else console.log("content.fields is null");
             if (match) {
               var fields = {};
               fields.name = {
