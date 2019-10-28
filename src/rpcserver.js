@@ -331,14 +331,12 @@ var submittopartners_ss = function(
       if (err) {
         callback(err, undefined);
       } else {
-        console.log(cts);
         for (i = 0; i < cts.length; i++) {
           try {
             var content = cts[i];
             var wf = obj.fields.workingfield ? obj.fields.workingfield : [];
             var match = false;
-            console.log(wf);
-            console.log(content);
+
             if (content.fields) {
               if (content.fields.workingfields) {
                 for (i = 0; i < wf.length; i++) {
