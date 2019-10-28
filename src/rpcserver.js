@@ -340,7 +340,7 @@ var submittopartners_ss = function(
             if (content.fields) {
               if (content.fields.workingfields) {
                 for (i = 0; i < wf.length; i++) {
-                  if (content.fields.workingfields.includes(wf[i]))
+                  if (content.fields.workingfields.indexOf(wf[i]) != -1)
                     match = true;
                 }
               }
