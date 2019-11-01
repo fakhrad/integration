@@ -159,8 +159,8 @@ function whenConnected() {
                         changerequeststage(
                           channel,
                           req.body.data,
-                          req.body.data._id,
-                          "offered",
+                          req.body.data.fields.requestid,
+                          "5d6b5dd25b60dc0017c9511c",
                           callback
                         );
                       },
