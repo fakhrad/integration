@@ -93,6 +93,7 @@ function whenConnected() {
               switch (req.body.data.contentType) {
                 //#region  Vam Separ
                 //Vam Separ loan
+                case "5db301d0a1696b0017ba429d":
                 case "5d26e7e9375e9b001745e84e":
                   async.parallel(
                     {
@@ -120,6 +121,31 @@ function whenConnected() {
                   );
                   break;
                 // VamSepar offer
+                case "5dbc1e873474cb0017d6e06a":
+                  async.parallel(
+                    {
+                      changerequesttoofferrecieved: function(callback) {
+                        changerequeststage(
+                          channel,
+                          req.body.data,
+                          req.body.data.fields.requestid,
+                          "5d3fc30a7029a500172c5c3f",
+                          callback
+                        );
+                      },
+                      approveoffer: function(callback) {
+                        changestage(
+                          channel,
+                          req.body.data,
+                          req.body.data._id,
+                          "5d514934780b9c00170233e8",
+                          callback
+                        );
+                      }
+                    },
+                    (error, results) => {}
+                  );
+                  break;
                 case "5d3fc7397029a500172c5c46":
                   async.parallel(
                     {
