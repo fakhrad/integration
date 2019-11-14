@@ -2,9 +2,11 @@ var amqp = require("amqplib/callback_api");
 const Spaces = require("./models/space");
 const Tokens = require("./models/token");
 const Contents = require("./models/content");
+const Spaces = require("./models/space");
 const ContentTypes = require("./models/contentType");
 const uuidv4 = require("uuid/v4");
 var db = require("./db/init-db");
+const config = require("./config");
 var EventEmitter = require("events");
 var async = require("async");
 const REPLY_QUEUE = "amq.rabbitmq.reply-to";
@@ -90,6 +92,83 @@ function whenConnected() {
               "New content submitted." + msg.content.toString("utf8")
             );
             try {
+              try {
+                async.parallel(
+                  {
+                    space: function(callback) {
+                      Spaces.findById(req.body.data.sys.spaceId).exec(
+                        (err, space) => {
+                          if (err) {
+                            callback(err, undefined);
+                          } else {
+                            callback(undefined, space);
+                          }
+                        }
+                      );
+                    },
+                    ctype: function(callback) {
+                      ContentTypes.findById(req.body.data.contentType).exec(
+                        (err, ctype) => {
+                          if (err) {
+                            callback(err, undefined);
+                          } else {
+                            callback(undefined, ctype);
+                          }
+                        }
+                      );
+                    },
+                    token: function(callback) {
+                      Tokens.find({ userId: req.body.data.sys.issuer }).exec(
+                        (err, token) => {
+                          if (err) {
+                            callback(err, undefined);
+                          } else {
+                            callback(undefined, token);
+                          }
+                        }
+                      );
+                    }
+                  },
+                  (errors, results) => {
+                    if (results.space) {
+                      config.space = results.space;
+                      config.contentType = results.ctype;
+                      config.token = results.token;
+                      config.data = req.body.data;
+                      var webgooks = config.getWebhooks(
+                        req.body.contentType,
+                        "contentsubmitted"
+                      );
+                      for (i = 0; i < webgooks.length; i++) {
+                        webhook = webgooks[i];
+                        console.log("Start triggering " + webhook.name);
+                        webhook
+                          .onOk(() => {
+                            console.log(
+                              webhook.name + " triggered successfully"
+                            );
+                          })
+                          .onError(error => {
+                            console.log(
+                              webhook.name + " triggered with error : " + error
+                            );
+                          })
+                          .call(
+                            channel,
+                            space,
+                            token.userId,
+                            contentType,
+                            data,
+                            "5d514934780b9c00170233e8"
+                          );
+                      }
+                    } else console.log(results);
+                  }
+                );
+              } catch (ex) {
+                console.log(ex);
+              }
+
               switch (req.body.data.contentType) {
                 //#region  Vam Separ
                 //Vam Separ loan
