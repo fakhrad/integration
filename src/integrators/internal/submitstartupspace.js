@@ -2,6 +2,7 @@ const config = require("../../config");
 const Contents = require("../../models/content");
 const ContentTypes = require("../../models/contentType");
 const uuidv4 = require("uuid/v4");
+const async = require("async");
 function submitstartupspace() {
   var _onOkCallBack;
   function _onOk(result) {

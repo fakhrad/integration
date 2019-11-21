@@ -2,6 +2,7 @@ const config = require("../../config");
 const Contents = require("../../models/content");
 const ContentTypes = require("../../models/contentType");
 const uuidv4 = require("uuid/v4");
+const async = require("async");
 function submitloan() {
   var _onOkCallBack;
   function _onOk(result) {
@@ -150,7 +151,9 @@ function submitloan() {
           }
         },
         (error, results) => {
-          _onOk(results);
+          if (error) {
+            _onError({ success: false, error: ex });
+          } else _onOk(results);
         }
       );
     } catch (ex) {
