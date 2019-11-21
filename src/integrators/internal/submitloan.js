@@ -33,6 +33,7 @@ function submitloan() {
     obj,
     callback
   ) {
+    console.log("Submitting to partners");
     Contents.find({
       contentType: reqtype,
       status: "published",
@@ -91,6 +92,8 @@ function submitloan() {
 
   var changerequeststage = function(channel, obj, objId, stage, callback) {
     try {
+      console.log("Changing request stage");
+
       sendRPCMessage(
         channel,
         {
@@ -123,6 +126,7 @@ function submitloan() {
   };
   function _call(channel, space, userId, contentType, data, configuration) {
     try {
+      console.log("Submit loan trigger started.");
       async.parallel(
         {
           approvereqeust: function(callback) {
