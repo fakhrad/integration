@@ -1,6 +1,6 @@
 const config = require("../../config");
 const uuidv4 = require("uuid/v4");
-function sendFirebasepush() {
+function sendKavenegarSms() {
   var _onOkCallBack;
   function _onOk(result) {
     if (_onOkCallBack) {
@@ -26,14 +26,28 @@ function sendFirebasepush() {
   function _call(channel, space, userId, contentType, data, configuration) {
     try {
       var req = JSON.parse(msg.content.toString("utf8"));
-      console.log(
-        "Sending push message from firebase started : " +
-          msg.content.toString("utf8")
-      );
+      console.log("Sending mail started : " + msg.content.toString("utf8"));
       try {
         if (space) {
           if (!configuration) configuration = {};
           console.log(email);
+          sendRPCMessage(
+            channel,
+            {
+              body: {
+                spaec: space,
+                contentType: contentType,
+                data: data,
+                userId: userId,
+                message: configuration
+              }
+            },
+            "sendSmsMessage"
+          ).then(result => {
+            var obj = JSON.parse(result.toString("utf8"));
+            if (!obj.success) console.log(obj);
+            else console.log("Email sent");
+          });
         }
       } catch (ex) {
         console.log(ex);
@@ -55,5 +69,5 @@ function sendFirebasepush() {
   };
 }
 
-config.webhooks.sendFirebasepush = sendFirebasepush;
-exports.sendFirebasepush = sendFirebasepush;
+config.webhooks.sendKavenegarSms = sendKavenegarSms;
+exports.sendKavenegarSms = sendKavenegarSms;

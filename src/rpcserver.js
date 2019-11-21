@@ -1,5 +1,4 @@
 var amqp = require("amqplib/callback_api");
-const Spaces = require("./models/space");
 const Tokens = require("./models/token");
 const Contents = require("./models/content");
 const Spaces = require("./models/space");
@@ -10,9 +9,10 @@ const config = require("./config");
 var EventEmitter = require("events");
 var async = require("async");
 const REPLY_QUEUE = "amq.rabbitmq.reply-to";
+require("./integrators/internal/change_stage");
 var rabbitHost =
   process.env.RABBITMQ_HOST ||
-  "amqp://gvgeetrh:6SyWQAxDCpcdg1S0Dc-Up0sUxfmBUVZU@chimpanzee.rmq.cloudamqp.com/gvgeetrh";
+  "amqp://fwhebseo:Q3Ft5NUyFNBniua53p_bV8u-w3KVfmsK@wildboar.rmq.cloudamqp.com/fwhebseo";
 //var rabbitHost = process.env.RABBITMQ_HOST || "amqp://localhost:5672";
 
 var amqpConn = null;
@@ -116,50 +116,42 @@ function whenConnected() {
                           }
                         }
                       );
-                    },
-                    token: function(callback) {
-                      Tokens.find({ userId: req.body.data.sys.issuer }).exec(
-                        (err, token) => {
-                          if (err) {
-                            callback(err, undefined);
-                          } else {
-                            callback(undefined, token);
-                          }
-                        }
-                      );
                     }
                   },
                   (errors, results) => {
                     if (results.space) {
                       config.space = results.space;
                       config.contentType = results.ctype;
-                      config.token = results.token;
+                      config.userId = req.body.data.sys.issuer;
                       config.data = req.body.data;
-                      var webgooks = config.getWebhooks(
+                      var webhooks = config.getWebhooks(
                         req.body.contentType,
                         "contentsubmitted"
                       );
-                      for (i = 0; i < webgooks.length; i++) {
-                        webhook = webgooks[i];
-                        console.log("Start triggering " + webhook.name);
+                      for (i = 0; i < webhooks.length; i++) {
+                        webhook = webhooks[i];
+                        console.log("Start triggering " + webhook.data.name);
                         webhook
+                          .func()
                           .onOk(() => {
                             console.log(
-                              webhook.name + " triggered successfully"
+                              webhook.data.name + " triggered successfully"
                             );
                           })
                           .onError(error => {
                             console.log(
-                              webhook.name + " triggered with error : " + error
+                              webhook.data.name +
+                                " triggered with error : " +
+                                error
                             );
                           })
                           .call(
                             channel,
-                            space,
-                            token.userId,
-                            contentType,
-                            data,
-                            "5d514934780b9c00170233e8"
+                            config.space,
+                            config.userId,
+                            config.contentType,
+                            config.data,
+                            webhook.data.config
                           );
                       }
                     } else console.log(results);
@@ -169,148 +161,148 @@ function whenConnected() {
                 console.log(ex);
               }
 
-              switch (req.body.data.contentType) {
-                //#region  Vam Separ
-                //Vam Separ loan
-                case "5db301d0a1696b0017ba429d":
-                case "5d26e7e9375e9b001745e84e":
-                  async.parallel(
-                    {
-                      approvereqeust: function(callback) {
-                        changerequeststage(
-                          channel,
-                          req.body.data,
-                          req.body.data._id,
-                          "5d3fc2f77029a500172c5c3e",
-                          callback
-                        );
-                      },
-                      sendtopartners: function(callback) {
-                        submittopartners(
-                          ch,
-                          "5d3fc9b97029a500172c5c48",
-                          "5d6e8accc51a44001703df19",
-                          "5d62814c0490c200171f0d71",
-                          req.body.data,
-                          callback
-                        );
-                      }
-                    },
-                    (error, results) => {}
-                  );
-                  break;
-                // VamSepar offer
-                case "5dbc1e873474cb0017d6e06a":
-                  async.parallel(
-                    {
-                      changerequesttoofferrecieved: function(callback) {
-                        changerequeststage(
-                          channel,
-                          req.body.data,
-                          req.body.data.fields.requestid,
-                          "5d3fc30a7029a500172c5c3f",
-                          callback
-                        );
-                      },
-                      approveoffer: function(callback) {
-                        changestage(
-                          channel,
-                          req.body.data,
-                          req.body.data._id,
-                          "5d514934780b9c00170233e8",
-                          callback
-                        );
-                      }
-                    },
-                    (error, results) => {}
-                  );
-                  break;
-                case "5d3fc7397029a500172c5c46":
-                  async.parallel(
-                    {
-                      changerequesttoofferrecieved: function(callback) {
-                        changerequeststage(
-                          channel,
-                          req.body.data,
-                          req.body.data.fields.loan,
-                          "5d3fc30a7029a500172c5c3f",
-                          callback
-                        );
-                      },
-                      approveoffer: function(callback) {
-                        changestage(
-                          channel,
-                          req.body.data,
-                          req.body.data._id,
-                          "5d514934780b9c00170233e8",
-                          callback
-                        );
-                      }
-                    },
-                    (error, results) => {}
-                  );
-                  break;
-                //#endregion
-                //#region  Startup space
-                //Deficated office
-                case "5cf7e7449916860017805408":
-                //Shared and private desk
-                case "5cfc95472606810017dca194":
-                ///Meeting Room
-                case "5cf7e7289916860017805407":
-                  async.parallel(
-                    {
-                      approvereqeust: function(callback) {
-                        changerequeststage(
-                          channel,
-                          req.body.data,
-                          req.body.data.fields.requestid,
-                          "5d6b5dd25b60dc0017c9511c",
-                          callback
-                        );
-                      },
-                      sendtopartners: function(callback) {
-                        submittopartners_ss(
-                          ch,
-                          "5d358ebc8e6e9a0017c28fc9",
-                          "assigned",
-                          "5d58df5a74c64b0017fb45d8",
-                          req.body.data,
-                          callback
-                        );
-                      }
-                    },
-                    (error, results) => {}
-                  );
-                  break;
+              // switch (req.body.data.contentType) {
+              //   //#region  Vam Separ
+              //   //Vam Separ loan
+              //   case "5db301d0a1696b0017ba429d":
+              //   case "5d26e7e9375e9b001745e84e":
+              //     async.parallel(
+              //       {
+              //         approvereqeust: function(callback) {
+              //           changerequeststage(
+              //             channel,
+              //             req.body.data,
+              //             req.body.data._id,
+              //             "5d3fc2f77029a500172c5c3e",
+              //             callback
+              //           );
+              //         },
+              //         sendtopartners: function(callback) {
+              //           submittopartners(
+              //             ch,
+              //             "5d3fc9b97029a500172c5c48",
+              //             "5d6e8accc51a44001703df19",
+              //             "5d62814c0490c200171f0d71",
+              //             req.body.data,
+              //             callback
+              //           );
+              //         }
+              //       },
+              //       (error, results) => {}
+              //     );
+              //     break;
+              //   // VamSepar offer
+              //   case "5dbc1e873474cb0017d6e06a":
+              //     async.parallel(
+              //       {
+              //         changerequesttoofferrecieved: function(callback) {
+              //           changerequeststage(
+              //             channel,
+              //             req.body.data,
+              //             req.body.data.fields.requestid,
+              //             "5d3fc30a7029a500172c5c3f",
+              //             callback
+              //           );
+              //         },
+              //         approveoffer: function(callback) {
+              //           changestage(
+              //             channel,
+              //             req.body.data,
+              //             req.body.data._id,
+              //             "5d514934780b9c00170233e8",
+              //             callback
+              //           );
+              //         }
+              //       },
+              //       (error, results) => {}
+              //     );
+              //     break;
+              //   case "5d3fc7397029a500172c5c46":
+              //     async.parallel(
+              //       {
+              //         changerequesttoofferrecieved: function(callback) {
+              //           changerequeststage(
+              //             channel,
+              //             req.body.data,
+              //             req.body.data.fields.loan,
+              //             "5d3fc30a7029a500172c5c3f",
+              //             callback
+              //           );
+              //         },
+              //         approveoffer: function(callback) {
+              //           changestage(
+              //             channel,
+              //             req.body.data,
+              //             req.body.data._id,
+              //             "5d514934780b9c00170233e8",
+              //             callback
+              //           );
+              //         }
+              //       },
+              //       (error, results) => {}
+              //     );
+              //     break;
+              //   //#endregion
+              //   //#region  Startup space
+              //   //Deficated office
+              //   case "5cf7e7449916860017805408":
+              //   //Shared and private desk
+              //   case "5cfc95472606810017dca194":
+              //   ///Meeting Room
+              //   case "5cf7e7289916860017805407":
+              //     async.parallel(
+              //       {
+              //         approvereqeust: function(callback) {
+              //           changerequeststage(
+              //             channel,
+              //             req.body.data,
+              //             req.body.data.fields.requestid,
+              //             "5d6b5dd25b60dc0017c9511c",
+              //             callback
+              //           );
+              //         },
+              //         sendtopartners: function(callback) {
+              //           submittopartners_ss(
+              //             ch,
+              //             "5d358ebc8e6e9a0017c28fc9",
+              //             "assigned",
+              //             "5d58df5a74c64b0017fb45d8",
+              //             req.body.data,
+              //             callback
+              //           );
+              //         }
+              //       },
+              //       (error, results) => {}
+              //     );
+              //     break;
 
-                case "5d35adc68e6e9a0017c28fcb":
-                  async.parallel(
-                    {
-                      changerequesttoofferrecieved: function(callback) {
-                        changerequeststage(
-                          channel,
-                          req.body.data,
-                          req.body.data.fields.requestid,
-                          "5d7e582415586f0017d4836c",
-                          callback
-                        );
-                      },
-                      approveoffer: function(callback) {
-                        changestage(
-                          channel,
-                          req.body.data,
-                          req.body.data._id,
-                          "5d7b968918a6400017ee1513",
-                          callback
-                        );
-                      }
-                    },
-                    (error, results) => {}
-                  );
-                  break;
-                //#endregion
-              }
+              //   case "5d35adc68e6e9a0017c28fcb":
+              //     async.parallel(
+              //       {
+              //         changerequesttoofferrecieved: function(callback) {
+              //           changerequeststage(
+              //             channel,
+              //             req.body.data,
+              //             req.body.data.fields.requestid,
+              //             "5d7e582415586f0017d4836c",
+              //             callback
+              //           );
+              //         },
+              //         approveoffer: function(callback) {
+              //           changestage(
+              //             channel,
+              //             req.body.data,
+              //             req.body.data._id,
+              //             "5d7b968918a6400017ee1513",
+              //             callback
+              //           );
+              //         }
+              //       },
+              //       (error, results) => {}
+              //     );
+              //     break;
+              //   //#endregion
+              // }
             } catch (ex) {
               console.log(ex);
             }
@@ -361,62 +353,6 @@ var sendnotification = function(broker, token, obj, callback) {
   callback(undefined, obj);
 };
 
-var submittopartners = function(broker, reqtype, stage, spoid, obj, callback) {
-  Contents.find({
-    contentType: reqtype,
-    status: "published",
-    "sys.spaceId": obj.sys.spaceId
-  })
-    .select("_id name status")
-    .exec((err, cts) => {
-      if (err) {
-        callback(err, undefined);
-      } else {
-        console.log(cts);
-        for (i = 0; i < cts.length; i++) {
-          try {
-            var content = cts[i];
-            var fields = {};
-            fields.name = {
-              fa: obj.fields.name,
-              en: obj.fields.name
-            };
-            fields.stage = stage;
-            fields.partnerid = content._id;
-            fields.requestid = obj._id;
-            var request = new Contents({
-              fields: fields,
-              contentType: spoid
-            });
-            sendRPCMessage(
-              channel,
-              {
-                body: request,
-                userId: obj.sys.issuer,
-                spaceId: obj.sys.spaceId
-              },
-              "addcontent"
-            ).then(result => {
-              var obj = JSON.parse(result.toString("utf8"));
-              if (!obj.success) {
-                if (obj.error) {
-                  callback(err, undefined);
-                  return;
-                }
-              } else {
-                //do mach making and submit to partners
-                callback(undefined, obj);
-              }
-            });
-          } catch (ex) {
-            console.log(ex);
-          }
-        }
-      }
-    });
-
-  callback(undefined, obj);
-};
 var submittopartners_ss = function(
   broker,
   reqtype,

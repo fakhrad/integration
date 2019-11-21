@@ -1,6 +1,8 @@
 const config = require("../../config");
+const Contents = require("../../models/content");
+const ContentTypes = require("../../models/contentType");
 const uuidv4 = require("uuid/v4");
-function change_stage() {
+function submitloanoffer() {
   var _onOkCallBack;
   function _onOk(result) {
     if (_onOkCallBack) {
@@ -23,32 +25,64 @@ function change_stage() {
       channel.sendToQueue(rpcQueue, Buffer.from(JSON.stringify(message)));
     });
 
-  function _call(channel, space, userId, contentType, data, configuration) {
+  var changestage = function(channel, obj, objId, stage, callback) {
     try {
       sendRPCMessage(
         channel,
         {
           body: {
-            id: data._id,
+            id: objId,
             fields: {
-              stage: configuration.stage
+              stage: stage
             }
           },
-          userId: userId,
-          spaceId: space._id
+          userId: obj.sys.issuer,
+          spaceId: obj.sys.spaceId
         },
         "partialupdatecontent"
       ).then(result => {
         var obj = JSON.parse(result.toString("utf8"));
         if (!obj.success) {
           if (obj.error) {
-            _onError(obj);
+            callback(err, undefined);
             return;
           }
         } else {
-          _onOk(result);
+          //do mach making and submit to partners
+          callback(undefined, obj);
         }
       });
+    } catch (ex) {
+      console.log(ex);
+    }
+    callback(undefined, obj);
+  };
+
+  function _call(channel, space, userId, contentType, data, configuration) {
+    try {
+      async.parallel(
+        {
+          changerequesttoofferrecieved: function(callback) {
+            changestage(
+              channel,
+              data,
+              data.fields.requestid,
+              "5d3fc30a7029a500172c5c3f",
+              callback
+            );
+          },
+          approveoffer: function(callback) {
+            changestage(
+              channel,
+              data,
+              data._id,
+              "5d514934780b9c00170233e8",
+              callback
+            );
+          }
+        },
+        (error, results) => {}
+      );
     } catch (ex) {
       _onError({ success: false, error: ex });
     }
@@ -66,5 +100,5 @@ function change_stage() {
   };
 }
 
-config.webhooks.change_stage = change_stage;
-exports.change_stage = change_stage;
+config.webhooks.submitloanoffer = submitloanoffer;
+exports.submitloanoffer = submitloanoffer;
