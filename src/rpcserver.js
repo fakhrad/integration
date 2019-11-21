@@ -132,7 +132,6 @@ function whenConnected() {
                         req.body.data.contentType,
                         "contentsubmitted"
                       );
-                      console.log(JSON.stringify(config));
                       for (i = 0; i < webhooks.length; i++) {
                         webhook = webhooks[i];
                         console.log("Start triggering " + webhook.data.name);

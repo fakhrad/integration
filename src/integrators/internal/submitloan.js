@@ -45,7 +45,6 @@ function submitloan() {
         if (err) {
           callback(err, undefined);
         } else {
-          console.log(cts);
           for (i = 0; i < cts.length; i++) {
             try {
               var content = cts[i];
@@ -151,12 +150,11 @@ function submitloan() {
           }
         },
         (error, results) => {
-          if (error) {
-            _onError({ success: false, error: ex });
-          } else _onOk(results);
+          _onOk(error, results);
         }
       );
     } catch (ex) {
+      console.log(ex);
       _onError({ success: false, error: ex });
     }
   }
@@ -167,7 +165,7 @@ function submitloan() {
       return this;
     },
     onError: function(callback) {
-      _onOkCallBack = callback;
+      this._onErrorCallBack = callback;
       return this;
     }
   };
