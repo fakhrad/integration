@@ -5,6 +5,7 @@ module.exports = {
   data: {},
   webhooks: {},
   getWebhooks: function(contentType, eventName) {
+    console.log(contentType, " === " + eventName);
     if (this.space) {
       var whs = [];
       for (i = 0; i < this.space.webhooks.length; i++) {
@@ -15,7 +16,7 @@ module.exports = {
             (this.contentType &&
               this.space.webhooks[i].trigger.contentTypes &&
               this.space.webhooks[i].trigger.contentTypes.indexOf(
-                contentType.toString()
+                this.contentType.toString()
               ) != -1))
         ) {
           whs.push({

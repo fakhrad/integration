@@ -125,7 +125,7 @@ function whenConnected() {
                       config.userId = req.body.data.sys.issuer;
                       config.data = req.body.data;
                       var webhooks = config.getWebhooks(
-                        req.body.contentType,
+                        req.body.data.contentType,
                         "contentsubmitted"
                       );
                       console.log(JSON.stringify(config));
