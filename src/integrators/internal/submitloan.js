@@ -93,7 +93,7 @@ function submitloan() {
 
   var changerequeststage = function(channel, obj, objId, stage, callback) {
     try {
-      console.log("Changing request stage");
+      console.log("Changing request stage started");
 
       sendRPCMessage(
         channel,
