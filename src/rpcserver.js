@@ -147,7 +147,7 @@ function whenConnected() {
                             console.log(
                               webhook.data.name +
                                 " triggered with error : " +
-                                error
+                                JSON.toString(error)
                             );
                           })
                           .call(
