@@ -24,6 +24,7 @@ module.exports = {
           });
         }
       }
+      console.log(whs);
       return whs;
     }
   }
