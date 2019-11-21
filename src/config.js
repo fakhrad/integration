@@ -16,7 +16,7 @@ module.exports = {
             (this.contentType &&
               this.space.webhooks[i].trigger.contentTypes &&
               this.space.webhooks[i].trigger.contentTypes.indexOf(
-                this.contentType.toString()
+                contentType.toString()
               ) != -1))
         ) {
           whs.push({
