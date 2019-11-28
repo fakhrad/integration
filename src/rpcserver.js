@@ -134,29 +134,31 @@ function whenConnected() {
                       );
                       for (i = 0; i < webhooks.length; i++) {
                         webhook = webhooks[i];
-                        console.log("Start triggering " + webhook.data.name);
-                        webhook
-                          .func()
-                          .onOk(() => {
-                            console.log(
-                              webhook.data.name + " triggered successfully"
+                        if (webhook && webhook.func) {
+                          console.log("Start triggering " + webhook.data.name);
+                          webhook
+                            .func()
+                            .onOk(() => {
+                              console.log(
+                                webhook.data.name + " triggered successfully"
+                              );
+                            })
+                            .onError(error => {
+                              console.log(
+                                webhook.data.name +
+                                  " triggered with error : " +
+                                  JSON.stringify(error)
+                              );
+                            })
+                            .call(
+                              channel,
+                              config.space,
+                              config.userId,
+                              config.contentType,
+                              config.data,
+                              webhook.data.config
                             );
-                          })
-                          .onError(error => {
-                            console.log(
-                              webhook.data.name +
-                                " triggered with error : " +
-                                JSON.stringify(error)
-                            );
-                          })
-                          .call(
-                            channel,
-                            config.space,
-                            config.userId,
-                            config.contentType,
-                            config.data,
-                            webhook.data.config
-                          );
+                        }
                       }
                     } else console.log(results);
                   }
