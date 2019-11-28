@@ -26,7 +26,15 @@ function submitstartupoffer() {
       channel.sendToQueue(rpcQueue, Buffer.from(JSON.stringify(message)));
     });
 
-  var changestage = function(channel, obj, objId, stage, callback) {
+  var changestage = function(
+    channel,
+    spaceId,
+    userId,
+    obj,
+    objId,
+    stage,
+    callback
+  ) {
     try {
       sendRPCMessage(
         channel,
@@ -37,8 +45,8 @@ function submitstartupoffer() {
               stage: stage
             }
           },
-          userId: obj.sys.issuer,
-          spaceId: obj.sys.spaceId
+          userId: userId,
+          spaceId: spaceId
         },
         "partialupdatecontent"
       ).then(result => {
@@ -66,6 +74,8 @@ function submitstartupoffer() {
           changerequesttoofferrecieved: function(callback) {
             changestage(
               channel,
+              space._id,
+              userId,
               data,
               data.fields.requestid._id,
               "5d3fc30a7029a500172c5c3f",
@@ -75,6 +85,8 @@ function submitstartupoffer() {
           approveoffer: function(callback) {
             changestage(
               channel,
+              space._id,
+              userId,
               data,
               data._id,
               "5d514934780b9c00170233e8",
