@@ -61,6 +61,11 @@ function submitloanoffer() {
 
   function _call(channel, space, userId, contentType, data, configuration) {
     try {
+      console.log(
+        JSON.stringify(
+          data.fields.loan ? data.fields.loan : data.fields.requestid
+        )
+      );
       async.parallel(
         {
           changerequesttoofferrecieved: function(callback) {
