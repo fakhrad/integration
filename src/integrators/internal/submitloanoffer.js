@@ -67,7 +67,7 @@ function submitloanoffer() {
             changestage(
               channel,
               data,
-              data.fields.requestid._id,
+              data.fields.loan ? data.fields.loan : data.fields.requestid,
               "5d3fc30a7029a500172c5c3f",
               callback
             );
