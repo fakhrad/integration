@@ -12,8 +12,8 @@ const REPLY_QUEUE = "amq.rabbitmq.reply-to";
 require("./integrators/internal/change_stage");
 require("./integrators/internal/submitloan");
 require("./integrators/internal/submitloanoffer");
-require("./integrators/internal/submitloanoffer");
-require("./integrators/internal/submitloanoffer");
+require("./integrators/internal/submitstartupoffer");
+require("./integrators/internal/submitstartupspace");
 var rabbitHost =
   process.env.RABBITMQ_HOST ||
   "amqp://fwhebseo:Q3Ft5NUyFNBniua53p_bV8u-w3KVfmsK@wildboar.rmq.cloudamqp.com/fwhebseo";
