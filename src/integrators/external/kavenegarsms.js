@@ -26,7 +26,7 @@ function sendKavenegarSms() {
   function _call(channel, space, userId, contentType, data, configuration) {
     try {
       var req = JSON.parse(msg.content.toString("utf8"));
-      console.log("Sending mail started : " + msg.content.toString("utf8"));
+      console.log("Sending sms started : " + msg.content.toString("utf8"));
       try {
         if (space) {
           if (!configuration) configuration = {};
@@ -42,14 +42,14 @@ function sendKavenegarSms() {
                   ? data.fields.phoneNumber
                   : data.fields.phonenumber,
                 userId: userId,
-                message: configuration
+                message: configuration.message
               }
             },
             "sendSmsMessage"
           ).then(result => {
             var obj = JSON.parse(result.toString("utf8"));
             if (!obj.success) console.log(obj);
-            else console.log("Email sent");
+            else console.log("Sms sent");
           });
         }
       } catch (ex) {

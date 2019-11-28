@@ -14,6 +14,7 @@ require("./integrators/internal/submitloan");
 require("./integrators/internal/submitloanoffer");
 require("./integrators/internal/submitstartupoffer");
 require("./integrators/internal/submitstartupspace");
+require("./integrators/external/kavenegarsms");
 var rabbitHost =
   process.env.RABBITMQ_HOST ||
   "amqp://fwhebseo:Q3Ft5NUyFNBniua53p_bV8u-w3KVfmsK@wildboar.rmq.cloudamqp.com/fwhebseo";
