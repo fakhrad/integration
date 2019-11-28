@@ -35,9 +35,12 @@ function sendKavenegarSms() {
             channel,
             {
               body: {
-                spaec: space,
+                clientId: space._id,
                 contentType: contentType,
                 data: data,
+                phoneNumber: data.fields.phoneNumber
+                  ? data.fields.phoneNumber
+                  : data.fields.phonenumber,
                 userId: userId,
                 message: configuration
               }
