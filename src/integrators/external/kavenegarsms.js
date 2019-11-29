@@ -25,12 +25,10 @@ function sendKavenegarSms() {
 
   function _call(channel, space, userId, contentType, data, configuration) {
     try {
-      var req = JSON.parse(msg.content.toString("utf8"));
-      console.log("Sending sms started : " + msg.content.toString("utf8"));
+      console.log("Sending sms started : " + JSON.stringify(data));
       try {
         if (space) {
           if (!configuration) configuration = {};
-          console.log(email);
           sendRPCMessage(
             channel,
             {
