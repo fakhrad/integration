@@ -43,7 +43,7 @@ function sendKavenegarSms() {
                 message: configuration.message
               }
             },
-            "sendSmsMessage"
+            "sendMessage"
           ).then(result => {
             var obj = JSON.parse(result.toString("utf8"));
             if (!obj.success) console.log(obj);
