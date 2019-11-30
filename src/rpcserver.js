@@ -9,7 +9,6 @@ const config = require("./config");
 var EventEmitter = require("events");
 var async = require("async");
 const REPLY_QUEUE = "amq.rabbitmq.reply-to";
-require("./integrators/internal/change_stage");
 require("./integrators/internal/submitloan");
 require("./integrators/internal/submitloanoffer");
 require("./integrators/internal/submitstartupoffer");

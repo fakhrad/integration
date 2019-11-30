@@ -4,12 +4,13 @@
 
 var mongoose = require("mongoose");
 var Schema = mongoose.Schema;
+var connections = require("../db/connections");
 
 /**
  * Schema definitions.
  */
 
-module.exports = mongoose.model(
+module.exports = connections.authDb.model(
   "Tokens",
   new Schema({
     accessToken: { type: String },

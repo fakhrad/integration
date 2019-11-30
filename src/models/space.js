@@ -4,6 +4,7 @@
 
 var mongoose = require("mongoose");
 var Schema = mongoose.Schema;
+var connections = require("../db/connections");
 /**
  * Schema definitions.
  */
@@ -31,4 +32,4 @@ space.methods.viewModel = function(cb) {
     notification_email: this.notification_email
   };
 };
-module.exports = mongoose.model("Space", space);
+module.exports = connections.authDb.model("Space", space);
