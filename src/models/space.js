@@ -32,4 +32,4 @@ space.methods.viewModel = function(cb) {
     notification_email: this.notification_email
   };
 };
-module.exports = connections.authDb.model("Space", space);
+module.exports = connections.contentDb.model("Space", space);

@@ -23,39 +23,44 @@ function sendFirebasepush() {
       channel.sendToQueue(rpcQueue, Buffer.from(JSON.stringify(message)));
     });
 
-  function _call(channel, space, userId, contentType, data, configuration) {
+  function _call(
+    channel,
+    space,
+    token,
+    userId,
+    contentType,
+    data,
+    configuration
+  ) {
     try {
-      var req = JSON.parse(msg.content.toString("utf8"));
-      console.log(
-        "Sending push message from firebase started : " +
-          msg.content.toString("utf8")
-      );
-      try {
-        if (space) {
-          if (!configuration) configuration = {};
-          console.log(email);
-          sendRPCMessage(
-            channel,
-            {
-              body: {
-                spaec: space,
-                contentType: contentType,
-                data: data,
-                userId: userId,
-                message: configuration
-              }
-            },
-            "sendPushMessage"
-          ).then(result => {
-            var obj = JSON.parse(result.toString("utf8"));
-            if (!obj.success) console.log(obj);
-            else console.log("Push message sent");
-          });
-        }
-      } catch (ex) {
-        console.log(ex);
+      if (space) {
+        if (!configuration) configuration = {};
+        sendRPCMessage(
+          channel,
+          {
+            body: {
+              clientId: space._id.toString(),
+              device: token.deviceToken,
+              contentType: contentType ? contentType._id.toString() : "",
+              data: undefined,
+              userId: userId.toString(),
+              message: configuration
+            }
+          },
+          "sendPushMessage"
+        ).then(result => {
+          var obj = JSON.parse(result.toString("utf8"));
+          if (!obj.success) {
+            _onError(obj, undefined);
+            console.log(obj);
+          } else {
+            console.log("Push message sent");
+            _onOk(undefined, obj);
+          }
+        });
       }
     } catch (ex) {
+      console.log(ex);
       _onError({ success: false, error: ex });
     }
   }

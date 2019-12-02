@@ -23,7 +23,15 @@ function callFunction() {
       channel.sendToQueue(rpcQueue, Buffer.from(JSON.stringify(message)));
     });
 
-  function _call(channel, space, userId, contentType, data, configuration) {
+  function _call(
+    channel,
+    space,
+    token,
+    userId,
+    contentType,
+    data,
+    configuration
+  ) {
     try {
       var req = JSON.parse(msg.content.toString("utf8"));
       console.log("Sending mail started : " + msg.content.toString("utf8"));

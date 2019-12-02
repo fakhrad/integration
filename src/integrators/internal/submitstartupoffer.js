@@ -29,6 +29,7 @@ function submitstartupoffer() {
   var changestage = function(
     channel,
     spaceId,
+    token,
     userId,
     obj,
     objId,

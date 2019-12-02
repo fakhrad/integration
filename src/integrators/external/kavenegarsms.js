@@ -23,7 +23,15 @@ function sendKavenegarSms() {
       channel.sendToQueue(rpcQueue, Buffer.from(JSON.stringify(message)));
     });
 
-  function _call(channel, space, userId, contentType, data, configuration) {
+  function _call(
+    channel,
+    space,
+    token,
+    userId,
+    contentType,
+    data,
+    configuration
+  ) {
     try {
       console.log("Sending sms started : " + JSON.stringify(data));
       try {
@@ -43,11 +51,16 @@ function sendKavenegarSms() {
                 message: configuration.message
               }
             },
-            "sendMessage"
+            "sendSmsMessage"
           ).then(result => {
             var obj = JSON.parse(result.toString("utf8"));
-            if (!obj.success) console.log(obj);
-            else console.log("Sms sent");
+            if (!obj.success) {
+              _onError(obj, undefined);
+              console.log(obj);
+            } else {
+              console.log("Sms message sent");
+              _onOk(undefined, obj);
+            }
           });
         }
       } catch (ex) {

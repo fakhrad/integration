@@ -1,10 +1,10 @@
 var amqp = require("amqplib/callback_api");
+var db = require("./db/init-db");
 const Tokens = require("./models/token");
 const Contents = require("./models/content");
 const Spaces = require("./models/space");
 const ContentTypes = require("./models/contentType");
 const uuidv4 = require("uuid/v4");
-var db = require("./db/init-db");
 const config = require("./config");
 var EventEmitter = require("events");
 var async = require("async");
@@ -13,7 +13,8 @@ require("./integrators/internal/submitloan");
 require("./integrators/internal/submitloanoffer");
 require("./integrators/internal/submitstartupoffer");
 require("./integrators/internal/submitstartupspace");
-require("./integrators/external/kavenegarsms");
+require("./integrators/external/firebasepush");
+require("./integrators/internal/notifypartner");
 var rabbitHost =
   process.env.RABBITMQ_HOST ||
   "amqp://fwhebseo:Q3Ft5NUyFNBniua53p_bV8u-w3KVfmsK@wildboar.rmq.cloudamqp.com/fwhebseo";
@@ -92,9 +93,9 @@ function whenConnected() {
           function(msg) {
             // console.log(msg);
             var req = JSON.parse(msg.content.toString("utf8"));
-            console.log(
-              "New content submitted." + msg.content.toString("utf8")
-            );
+            // console.log(
+            //   "New content submitted." + msg.content.toString("utf8")
+            // );
             try {
               try {
                 async.parallel(
@@ -120,12 +121,24 @@ function whenConnected() {
                           }
                         }
                       );
+                    },
+                    token: function(callback) {
+                      Tokens.findOne({ userId: req.body.data.sys.issuer })
+                        .sort("-issueDate")
+                        .exec((err, token) => {
+                          if (err) {
+                            callback(err, undefined);
+                          } else {
+                            callback(undefined, token);
+                          }
+                        });
                     }
                   },
                   (errors, results) => {
                     if (results.space) {
                       config.space = results.space;
                       config.contentType = results.ctype;
+                      config.token = results.token;
                       config.userId = req.body.data.sys.issuer;
                       config.data = req.body.data;
                       var webhooks = config.getWebhooks(
@@ -153,6 +166,7 @@ function whenConnected() {
                             .call(
                               channel,
                               config.space,
+                              config.token,
                               config.userId,
                               config.contentType,
                               config.data,
@@ -503,5 +517,3 @@ var changestage = function(channel, obj, objId, stage, callback) {
   callback(undefined, obj);
 };
 start();
-
-db();

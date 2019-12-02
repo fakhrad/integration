@@ -23,6 +23,7 @@ module.exports = connections.authDb.model(
     activation_code: { type: Number },
     deviceToken: { type: String },
     os: { type: String },
-    version: { type: String }
+    version: { type: String },
+    issueDate: { type: Date, default: new Date() }
   })
 );

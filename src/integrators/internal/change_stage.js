@@ -23,7 +23,15 @@ function change_stage() {
       channel.sendToQueue(rpcQueue, Buffer.from(JSON.stringify(message)));
     });
 
-  function _call(channel, space, userId, contentType, data, configuration) {
+  function _call(
+    channel,
+    space,
+    token,
+    userId,
+    contentType,
+    data,
+    configuration
+  ) {
     try {
       sendRPCMessage(
         channel,

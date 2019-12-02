@@ -67,7 +67,15 @@ function submitloanoffer() {
     callback(undefined, obj);
   };
 
-  function _call(channel, space, userId, contentType, data, configuration) {
+  function _call(
+    channel,
+    space,
+    token,
+    userId,
+    contentType,
+    data,
+    configuration
+  ) {
     try {
       console.log(
         JSON.stringify(

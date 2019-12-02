@@ -30,6 +30,7 @@ function submitstartupspace() {
     broker,
     reqtype,
     stage,
+    token,
     spoid,
     obj,
     callback
