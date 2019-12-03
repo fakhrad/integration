@@ -47,6 +47,7 @@ function notifypartnerbyemail() {
             _onError(err, undefined);
           } else {
             configuration.to = partner.fields.email;
+            configuration.subject = data.fields.name;
             sendRPCMessage(
               channel,
               {
