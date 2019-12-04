@@ -27,21 +27,20 @@ function submitstartupspace() {
     });
 
   var submittopartners = function(
-    broker,
+    channel,
     reqtype,
     stage,
-    token,
     spoid,
     obj,
     callback
   ) {
+    console.log("Submitting to partners");
     Contents.find({
-      contentType: "5d358ebc8e6e9a0017c28fc9",
+      contentType: reqtype,
       status: "published",
-      "sys.spaceId": obj.sys.spaceId,
-      "fields.city": obj.fields.city
+      "sys.spaceId": obj.sys.spaceId
     })
-      .select("_id name status fields")
+      .select("_id name status")
       .exec((err, cts) => {
         if (err) {
           callback(err, undefined);
@@ -49,52 +48,38 @@ function submitstartupspace() {
           for (i = 0; i < cts.length; i++) {
             try {
               var content = cts[i];
-              // var wf = obj.fields.workingfield ? obj.fields.workingfield : [];
-              var match = true;
-              // console.log(wf);
-              // if (content.fields) {
-              //   if (content.fields.workingfields) {
-              //     console.log(content.fields.workingfields);
-              //     for (i = 0; i < wf.length; i++) {
-              //       if (content.fields.workingfields.indexOf(wf[i]) != -1)
-              //         match = true;
-              //     }
-              //   }
-              // } else console.log("content.fields is null");
-              if (match) {
-                var fields = {};
-                fields.name = {
-                  fa: obj.fields.name,
-                  en: obj.fields.name
-                };
-                fields.stage = stage;
-                fields.partnerid = content._id;
-                fields.requestid = obj._id;
-                var request = new Contents({
-                  fields: fields,
-                  contentType: spoid
-                });
-                sendRPCMessage(
-                  channel,
-                  {
-                    body: request,
-                    userId: obj.sys.issuer,
-                    spaceId: obj.sys.spaceId
-                  },
-                  "submitcontent"
-                ).then(result => {
-                  var obj = JSON.parse(result.toString("utf8"));
-                  if (!obj.success) {
-                    if (obj.error) {
-                      callback(err, undefined);
-                      return;
-                    }
-                  } else {
-                    //do mach making and submit to partners
-                    callback(undefined, obj);
+              var fields = {};
+              fields.name = {
+                fa: obj.fields.name,
+                en: obj.fields.name
+              };
+              fields.stage = stage;
+              fields.partnerid = content._id;
+              fields.requestid = obj._id;
+              var request = new Contents({
+                fields: fields,
+                contentType: spoid
+              });
+              sendRPCMessage(
+                channel,
+                {
+                  body: request,
+                  userId: obj.sys.issuer,
+                  spaceId: obj.sys.spaceId
+                },
+                "submitcontent"
+              ).then(result => {
+                var obj = JSON.parse(result.toString("utf8"));
+                if (!obj.success) {
+                  if (obj.error) {
+                    callback(err, undefined);
+                    return;
                   }
-                });
-              }
+                } else {
+                  //do mach making and submit to partners
+                  callback(undefined, obj);
+                }
+              });
             } catch (ex) {
               console.log(ex);
             }
@@ -107,6 +92,8 @@ function submitstartupspace() {
 
   var changerequeststage = function(channel, obj, objId, stage, callback) {
     try {
+      console.log("Changing request stage started");
+
       sendRPCMessage(
         channel,
         {
@@ -137,34 +124,45 @@ function submitstartupspace() {
     }
     callback(undefined, obj);
   };
-  function _call(channel, space, userId, contentType, data, configuration) {
+  function _call(
+    channel,
+    space,
+    token,
+    userId,
+    contentType,
+    data,
+    configuration
+  ) {
     try {
+      console.log("Submit startupspace trigger started.");
       async.parallel(
         {
-          changerequesttoofferrecieved: function(callback) {
+          approvereqeust: function(callback) {
             changerequeststage(
               channel,
               data,
-              data.fields.requestid,
-              "5d7e582415586f0017d4836c",
+              data._id,
+              "5d6b5dd25b60dc0017c9511c",
               callback
             );
           },
-          approveoffer: function(callback) {
-            changestage(
+          sendtopartners: function(callback) {
+            submittopartners(
               channel,
+              "5d358ebc8e6e9a0017c28fc9",
+              "assigned",
+              "5d58df5a74c64b0017fb45d8",
               data,
-              data._id,
-              "5d7b968918a6400017ee1513",
               callback
             );
           }
         },
         (error, results) => {
-          _onOk(results);
+          _onOk(error, results);
         }
       );
     } catch (ex) {
+      console.log(ex);
       _onError({ success: false, error: ex });
     }
   }
@@ -175,7 +173,7 @@ function submitstartupspace() {
       return this;
     },
     onError: function(callback) {
-      _onOkCallBack = callback;
+      this._onErrorCallBack = callback;
       return this;
     }
   };

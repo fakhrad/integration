@@ -29,7 +29,6 @@ function submitstartupoffer() {
   var changestage = function(
     channel,
     spaceId,
-    token,
     userId,
     obj,
     objId,
@@ -68,8 +67,21 @@ function submitstartupoffer() {
     callback(undefined, obj);
   };
 
-  function _call(channel, space, userId, contentType, data, configuration) {
+  function _call(
+    channel,
+    space,
+    token,
+    userId,
+    contentType,
+    data,
+    configuration
+  ) {
     try {
+      console.log(
+        JSON.stringify(
+          data.fields.loan ? data.fields.loan : data.fields.requestid
+        )
+      );
       async.parallel(
         {
           changerequesttoofferrecieved: function(callback) {
@@ -78,8 +90,8 @@ function submitstartupoffer() {
               space._id,
               userId,
               data,
-              data.fields.requestid._id,
-              "5d3fc30a7029a500172c5c3f",
+              data.fields.requestid,
+              "5d7e582415586f0017d4836c",
               callback
             );
           },
@@ -90,7 +102,7 @@ function submitstartupoffer() {
               userId,
               data,
               data._id,
-              "5d514934780b9c00170233e8",
+              "5d7b968918a6400017ee1513",
               callback
             );
           }
