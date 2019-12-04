@@ -3,7 +3,7 @@ const Contents = require("../../models/content");
 const ContentTypes = require("../../models/contentType");
 const uuidv4 = require("uuid/v4");
 const async = require("async");
-function submitstartupspace() {
+function submitrequest() {
   var _onOkCallBack;
   function _onOk(result) {
     if (_onOkCallBack) {
@@ -134,7 +134,7 @@ function submitstartupspace() {
     configuration
   ) {
     try {
-      console.log("Submit startupspace trigger started.");
+      console.log("Submit trigger started.");
       async.parallel(
         {
           approvereqeust: function(callback) {
@@ -142,16 +142,16 @@ function submitstartupspace() {
               channel,
               data,
               data._id,
-              "5d6b5dd25b60dc0017c9511c",
+              configuration.request_stage,
               callback
             );
           },
           sendtopartners: function(callback) {
             submittopartners(
               channel,
-              "5d358ebc8e6e9a0017c28fc9",
-              "assigned",
-              "5d58df5a74c64b0017fb45d8",
+              configuration.request_type,
+              configuration.spo_stage,
+              configuration.spo_id,
               data,
               callback
             );
@@ -179,5 +179,5 @@ function submitstartupspace() {
   };
 }
 
-config.webhooks.submitstartupspace = submitstartupspace;
-exports.submitstartupspace = submitstartupspace;
+config.webhooks.submitrequest = submitrequest;
+exports.submitrequest = submitrequest;

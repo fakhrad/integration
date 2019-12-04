@@ -3,7 +3,7 @@ const Contents = require("../../models/content");
 const ContentTypes = require("../../models/contentType");
 const uuidv4 = require("uuid/v4");
 const async = require("async");
-function submitstartupoffer() {
+function submitoffer() {
   var _onOkCallBack;
   function _onOk(result) {
     if (_onOkCallBack) {
@@ -91,7 +91,7 @@ function submitstartupoffer() {
               userId,
               data,
               data.fields.requestid,
-              "5d7e582415586f0017d4836c",
+              configuration.request_stage,
               callback
             );
           },
@@ -102,7 +102,7 @@ function submitstartupoffer() {
               userId,
               data,
               data._id,
-              "5d7b968918a6400017ee1513",
+              configuration.offer_stage,
               callback
             );
           }
@@ -126,5 +126,5 @@ function submitstartupoffer() {
   };
 }
 
-config.webhooks.submitstartupoffer = submitstartupoffer;
-exports.submitstartupoffer = submitstartupoffer;
+config.webhooks.submitoffer = submitoffer;
+exports.submitoffer = submitoffer;
