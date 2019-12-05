@@ -33,36 +33,30 @@ function sendmail() {
     configuration
   ) {
     try {
-      var req = JSON.parse(msg.content.toString("utf8"));
-      console.log("Sending mail started : " + msg.content.toString("utf8"));
-      try {
-        if (space) {
-          if (!configuration) configuration = {};
-          console.log(email);
-          sendRPCMessage(
-            channel,
-            {
-              body: {
-                spaceId: space._id.toString(),
-                clientId: space._id.toString(),
-                contentType: contentType._id.toString(),
-                data: data,
-                userId: userId.toString(),
-                message: configuration
-              }
-            },
-            "sendEmailMessage"
-          ).then(result => {
-            var obj = JSON.parse(result.toString("utf8"));
-            if (!obj.success) console.log(obj);
-            else console.log("Email sent");
-          });
-        }
-      } catch (ex) {
-        console.log(ex);
+      if (space) {
+        if (!configuration) configuration = {};
+        if (!configuration.to) configuration.to = data.fields.email;
+        sendRPCMessage(
+          channel,
+          {
+            body: {
+              spaceId: space._id.toString(),
+              clientId: space._id.toString(),
+              contentType: contentType._id.toString(),
+              data: data,
+              userId: userId.toString(),
+              message: configuration
+            }
+          },
+          "sendEmailMessage"
+        ).then(result => {
+          var obj = JSON.parse(result.toString("utf8"));
+          if (!obj.success) console.log(obj);
+          else console.log("Email sent");
+        });
       }
     } catch (ex) {
-      _onError({ success: false, error: ex });
+      console.log(ex);
     }
   }
   return {
