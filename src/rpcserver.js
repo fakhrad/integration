@@ -14,7 +14,9 @@ require("./integrators/internal/submitoffer");
 require("./integrators/internal/submitrequest");
 require("./integrators/external/firebasepush");
 require("./integrators/internal/notifypartner");
+require("./integrators/external/kavenegarsms");
 require("./integrators/internal/notifypartnerbyemail");
+require("./integrators/internal/notifypartnerbyesms");
 var rabbitHost =
   process.env.RABBITMQ_HOST ||
   "amqp://fwhebseo:Q3Ft5NUyFNBniua53p_bV8u-w3KVfmsK@wildboar.rmq.cloudamqp.com/fwhebseo";

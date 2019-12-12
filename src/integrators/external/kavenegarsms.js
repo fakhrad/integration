@@ -1,6 +1,6 @@
 const config = require("../../config");
 const uuidv4 = require("uuid/v4");
-function sendKavenegarSms() {
+function kavenegarsms() {
   var _onOkCallBack;
   function _onOk(result) {
     if (_onOkCallBack) {
@@ -15,6 +15,29 @@ function sendKavenegarSms() {
     }
   }
 
+  var bind = (text, data, user, space) => {
+    Object.keys(data).forEach(key => {
+      var value = data[key];
+      if (typeof value == "object") {
+        Object.keys(value).forEach(key1 => {
+          var value1 = value[key1];
+          if (value1) {
+            text = text.replace(
+              "{@" + key + "." + key1 + "}",
+              value1.toString()
+            );
+          }
+        });
+      } else if (value) {
+        text = text.replace("{@" + key + "}", value.toString());
+      }
+    });
+    console.log(text);
+    console.log(text);
+    text = text.replace("{@appName}", space.name);
+    console.log(text);
+    return text;
+  };
   var sendRPCMessage = (channel, message, rpcQueue) =>
     new Promise(resolve => {
       const correlationId = uuidv4();
@@ -37,21 +60,23 @@ function sendKavenegarSms() {
       try {
         if (space) {
           if (!configuration) configuration = {};
+          var body = {
+            clientId: space._id,
+            contentType: contentType,
+            data: data,
+            phonenumber: data.fields.phoneNumber
+              ? data.fields.phoneNumber
+              : data.fields.phonenumber,
+            userId: userId,
+            message: bind(configuration.message, data, userId, space),
+            template: configuration.template
+          };
           sendRPCMessage(
             channel,
             {
-              body: {
-                clientId: space._id,
-                contentType: contentType,
-                data: data,
-                phoneNumber: data.fields.phoneNumber
-                  ? data.fields.phoneNumber
-                  : data.fields.phonenumber,
-                userId: userId,
-                message: configuration.message
-              }
+              body: body
             },
-            "sendSmsMessage"
+            "sendSmsWithTemplateMessage"
           ).then(result => {
             var obj = JSON.parse(result.toString("utf8"));
             if (!obj.success) {
@@ -83,5 +108,5 @@ function sendKavenegarSms() {
   };
 }
 
-config.webhooks.sendKavenegarSms = sendKavenegarSms;
-exports.sendKavenegarSms = sendKavenegarSms;
+config.webhooks.kavenegarsms = kavenegarsms;
+exports.kavenegarsms = kavenegarsms;
