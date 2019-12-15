@@ -67,6 +67,9 @@ function kavenegarsms() {
             phonenumber: data.fields.phoneNumber
               ? data.fields.phoneNumber
               : data.fields.phonenumber,
+            phoneNumber: data.fields.phoneNumber
+              ? data.fields.phoneNumber
+              : data.fields.phonenumber,
             userId: userId,
             message: bind(configuration.message, data, userId, space),
             template: configuration.template
