@@ -20,7 +20,7 @@ function sendFirebasepush() {
       const correlationId = uuidv4();
       // listen for the content emitted on the correlationId event
       //channel.responseEmitter.once(correlationId, resolve);
-      channel.sendToQueue(rpcQueue, Buffer.from(JSON.stringify(message)));
+      //channel.sendToQueue(rpcQueue, Buffer.from(JSON.stringify(message)));
     });
 
   function _call(
@@ -66,11 +66,11 @@ function sendFirebasepush() {
   }
   return {
     call: _call,
-    onOk: function(callback) {
+    onOk: function (callback) {
       _onOkCallBack = callback;
       return this;
     },
-    onError: function(callback) {
+    onError: function (callback) {
       _onOkCallBack = callback;
       return this;
     }
