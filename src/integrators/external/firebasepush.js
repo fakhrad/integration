@@ -33,7 +33,7 @@ function sendFirebasepush() {
     configuration
   ) {
     try {
-      if (space) {
+      if (space && process.env.PUSH_ENABLED == "true") {
         if (!configuration) configuration = {};
         sendRPCMessage(
           channel,
