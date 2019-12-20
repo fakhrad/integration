@@ -35,6 +35,21 @@ function submitrequest() {
     callback
   ) {
     console.log("Submitting to partners");
+    var istest = true;
+    var pn = obj.fields.phonenumber
+      ? obj.fields.phonenumber
+      : obj.fields.phoneNumber;
+    var tests = process.env.TEST_ACCOUNTS
+      ? process.env.TEST_ACCOUNTS.split(",")
+      : [
+          "+989197682386",
+          "+989333229291",
+          "+989125138218",
+          "09197682386",
+          "09333229291",
+          "09125138218"
+        ];
+    if (pn && tests.indexOf(pn) == -1) istest = false;
     Contents.find({
       contentType: reqtype,
       status: "published",
@@ -48,6 +63,7 @@ function submitrequest() {
           for (i = 0; i < cts.length; i++) {
             try {
               var content = cts[i];
+
               var fields = {};
               fields.name = {
                 fa: obj.fields.name,
@@ -60,26 +76,28 @@ function submitrequest() {
                 fields: fields,
                 contentType: spoid
               });
-              sendRPCMessage(
-                channel,
-                {
-                  body: request,
-                  userId: obj.sys.issuer,
-                  spaceId: obj.sys.spaceId
-                },
-                "submitcontent"
-              ).then(result => {
-                var obj = JSON.parse(result.toString("utf8"));
-                if (!obj.success) {
-                  if (obj.error) {
-                    callback(err, undefined);
-                    return;
+              if (!istest || (istest && content.fields.isdevacc)) {
+                sendRPCMessage(
+                  channel,
+                  {
+                    body: request,
+                    userId: obj.sys.issuer,
+                    spaceId: obj.sys.spaceId
+                  },
+                  "submitcontent"
+                ).then(result => {
+                  var obj = JSON.parse(result.toString("utf8"));
+                  if (!obj.success) {
+                    if (obj.error) {
+                      callback(err, undefined);
+                      return;
+                    }
+                  } else {
+                    //do mach making and submit to partners
+                    callback(undefined, obj);
                   }
-                } else {
-                  //do mach making and submit to partners
-                  callback(undefined, obj);
-                }
-              });
+                });
+              }
             } catch (ex) {
               console.log(ex);
             }
