@@ -54,56 +54,54 @@ function submitrequest() {
       contentType: reqtype,
       status: "published",
       "sys.spaceId": obj.sys.spaceId
-    })
-      .select("_id name status")
-      .exec((err, cts) => {
-        if (err) {
-          callback(err, undefined);
-        } else {
-          for (i = 0; i < cts.length; i++) {
-            try {
-              var content = cts[i];
+    }).exec((err, cts) => {
+      if (err) {
+        callback(err, undefined);
+      } else {
+        for (i = 0; i < cts.length; i++) {
+          try {
+            var content = cts[i];
 
-              var fields = {};
-              fields.name = {
-                fa: obj.fields.name,
-                en: obj.fields.name
-              };
-              fields.stage = stage;
-              fields.partnerid = content._id;
-              fields.requestid = obj._id;
-              var request = new Contents({
-                fields: fields,
-                contentType: spoid
-              });
-              if (!istest || (istest && content.fields.isdevacc)) {
-                sendRPCMessage(
-                  channel,
-                  {
-                    body: request,
-                    userId: obj.sys.issuer,
-                    spaceId: obj.sys.spaceId
-                  },
-                  "submitcontent"
-                ).then(result => {
-                  var obj = JSON.parse(result.toString("utf8"));
-                  if (!obj.success) {
-                    if (obj.error) {
-                      callback(err, undefined);
-                      return;
-                    }
-                  } else {
-                    //do mach making and submit to partners
-                    callback(undefined, obj);
+            var fields = {};
+            fields.name = {
+              fa: obj.fields.name,
+              en: obj.fields.name
+            };
+            fields.stage = stage;
+            fields.partnerid = content._id;
+            fields.requestid = obj._id;
+            var request = new Contents({
+              fields: fields,
+              contentType: spoid
+            });
+            if (!istest || (istest && content.fields.isdevacc)) {
+              sendRPCMessage(
+                channel,
+                {
+                  body: request,
+                  userId: obj.sys.issuer,
+                  spaceId: obj.sys.spaceId
+                },
+                "submitcontent"
+              ).then(result => {
+                var obj = JSON.parse(result.toString("utf8"));
+                if (!obj.success) {
+                  if (obj.error) {
+                    callback(err, undefined);
+                    return;
                   }
-                });
-              }
-            } catch (ex) {
-              console.log(ex);
+                } else {
+                  //do mach making and submit to partners
+                  callback(undefined, obj);
+                }
+              });
             }
+          } catch (ex) {
+            console.log(ex);
           }
         }
-      });
+      }
+    });
 
     callback(undefined, obj);
   };
