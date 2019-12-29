@@ -1,6 +1,7 @@
 const config = require("../../config");
 const uuidv4 = require("uuid/v4");
-function sendFirebasepush() {
+const axios = require('axios')
+function webservicecall() {
   var _onOkCallBack;
   function _onOk(result) {
     if (_onOkCallBack) {
@@ -15,13 +16,42 @@ function sendFirebasepush() {
     }
   }
 
-  var sendRPCMessage = (channel, message, rpcQueue) =>
-    new Promise(resolve => {
-      const correlationId = uuidv4();
-      // listen for the content emitted on the correlationId event
-      //channel.responseEmitter.once(correlationId, resolve);
-      channel.sendToQueue(rpcQueue, Buffer.from(JSON.stringify(message)));
-    });
+  function callWebservice(
+    callback,
+    apiRoot,
+    url,
+    method,
+    data,
+    invalid_response_error,
+    apicall_error,
+    token
+  ) {
+    var config = {
+      url: url,
+      baseURL: apiRoot,
+      method: method,
+      headers: {
+        Authorization: "Bearer " + token
+      },
+      params: data
+    };
+    if (method == "get") config.query;
+    else config.data = data;
+    //console.log(config);
+    axios(config)
+      .then(function (response) {
+        if (response && response.data) {
+          var output = response.data;
+          callback(undefined, output);
+        } else callback({ error: error, code: invalid_response_error }, undefined);
+      })
+      .catch(function (error) {
+        callback(
+          { error: JSON.stringify(error), code: apicall_error },
+          undefined
+        );
+      });
+  }
 
   function _call(
     channel,
@@ -33,18 +63,9 @@ function sendFirebasepush() {
     configuration
   ) {
     try {
-      var req = JSON.parse(msg.content.toString("utf8"));
-      console.log(
-        "Sending push message from firebase started : " +
-          msg.content.toString("utf8")
-      );
-      try {
-        if (space) {
-          if (!configuration) configuration = {};
-          console.log(email);
-        }
-      } catch (ex) {
-        console.log(ex);
+      if (space) {
+        if (!configuration) configuration = {};
+        console.log(email);
       }
     } catch (ex) {
       _onError({ success: false, error: ex });
@@ -52,16 +73,16 @@ function sendFirebasepush() {
   }
   return {
     call: _call,
-    onOk: function(callback) {
+    onOk: function (callback) {
       _onOkCallBack = callback;
       return this;
     },
-    onError: function(callback) {
+    onError: function (callback) {
       _onOkCallBack = callback;
       return this;
     }
   };
 }
 
-config.webhooks.sendFirebasepush = sendFirebasepush;
-exports.sendFirebasepush = sendFirebasepush;
+config.webhooks.webservicecall = webservicecall;
+exports.webservicecall = webservicecall;

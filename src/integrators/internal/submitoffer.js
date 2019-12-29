@@ -26,7 +26,7 @@ function submitoffer() {
       channel.sendToQueue(rpcQueue, Buffer.from(JSON.stringify(message)));
     });
 
-  var changestage = function(
+  var changestage = function (
     channel,
     spaceId,
     userId,
@@ -77,25 +77,23 @@ function submitoffer() {
     configuration
   ) {
     try {
-      console.log(
-        JSON.stringify(
-          data.fields.loan ? data.fields.loan : data.fields.requestid
-        )
-      );
+      console.log("data : ", JSON.stringify(data));
+      console.log("configuration : ", JSON.stringify(configuration));
+      console.log("space : ", JSON.stringify(space));
       async.parallel(
         {
-          changerequesttoofferrecieved: function(callback) {
+          changerequesttoofferrecieved: function (callback) {
             changestage(
               channel,
               space._id,
               userId,
               data,
-              data.fields.requestid,
+              data.fields.requestid ? data.fields.requestid : data.fields.loan,
               configuration.request_stage,
               callback
             );
           },
-          approveoffer: function(callback) {
+          approveoffer: function (callback) {
             changestage(
               channel,
               space._id,
@@ -107,7 +105,7 @@ function submitoffer() {
             );
           }
         },
-        (error, results) => {}
+        (error, results) => { }
       );
     } catch (ex) {
       _onError({ success: false, error: ex });
@@ -115,11 +113,11 @@ function submitoffer() {
   }
   return {
     call: _call,
-    onOk: function(callback) {
+    onOk: function (callback) {
       _onOkCallBack = callback;
       return this;
     },
-    onError: function(callback) {
+    onError: function (callback) {
       _onOkCallBack = callback;
       return this;
     }

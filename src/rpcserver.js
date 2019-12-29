@@ -17,9 +17,10 @@ require("./integrators/internal/notifypartner");
 require("./integrators/external/kavenegarsms");
 require("./integrators/internal/notifypartnerbyemail");
 require("./integrators/internal/notifypartnerbyesms");
+require("./integrators/internal/offeraccepted");
 var rabbitHost =
   process.env.RABBITMQ_HOST ||
-  "amqp://fwhebseo:Q3Ft5NUyFNBniua53p_bV8u-w3KVfmsK@wildboar.rmq.cloudamqp.com/fwhebseo";
+  "amqp://fakhrad:logrezaee24359@queue.reqter.com";
 //var rabbitHost = process.env.RABBITMQ_HOST || "amqp://localhost:5672";
 
 var amqpConn = null;
@@ -28,14 +29,14 @@ function start() {
   amqp.connect(rabbitHost, (err, conn) => {
     if (err) {
       console.error("[AMQP]", err.message);
-      return setTimeout(start, 1000);
+      return setTimeout(start, 5000);
     }
-    conn.on("error", function(err) {
+    conn.on("error", function (err) {
       if (err.message !== "Connection closing") {
         console.error("[AMQP] conn error", err.message);
       }
     });
-    conn.on("close", function() {
+    conn.on("close", function () {
       console.error("[AMQP] reconnecting");
       //return setTimeout(start, 1000);
     });
@@ -52,10 +53,10 @@ function whenConnected() {
       console.error("[AMQP]", err.message);
       //return setTimeout(start, 1000);
     }
-    ch.on("error", function(err) {
+    ch.on("error", function (err) {
       console.error("[AMQP] channel error", err.message);
     });
-    ch.on("close", function() {
+    ch.on("close", function () {
       console.log("[AMQP] channel closed");
     });
     // create an event emitter where rpc responses will be published by correlationId
@@ -87,22 +88,25 @@ function whenConnected() {
       durable: false
     });
 
+    ch.assertExchange("requester", "direct", {
+      durable: false
+    });
+
     ch.assertQueue("", { durable: false, exclusive: true }, (err, q) => {
       if (!err) {
         ch.bindQueue(q.queue, "contentservice", "contentsubmitted");
         ch.consume(
           q.queue,
-          function(msg) {
-            // console.log(msg);
+          function (msg) {
             var req = JSON.parse(msg.content.toString("utf8"));
-            // console.log(
-            //   "New content submitted." + msg.content.toString("utf8")
-            // );
+            console.log(
+              "New content submitted." + msg.content.toString("utf8")
+            );
             try {
               try {
                 async.parallel(
                   {
-                    space: function(callback) {
+                    space: function (callback) {
                       Spaces.findById(req.body.data.sys.spaceId).exec(
                         (err, space) => {
                           if (err) {
@@ -113,7 +117,7 @@ function whenConnected() {
                         }
                       );
                     },
-                    ctype: function(callback) {
+                    ctype: function (callback) {
                       ContentTypes.findById(req.body.data.contentType).exec(
                         (err, ctype) => {
                           if (err) {
@@ -124,7 +128,7 @@ function whenConnected() {
                         }
                       );
                     },
-                    token: function(callback) {
+                    token: function (callback) {
                       Tokens.findOne({ userId: req.body.data.sys.issuer })
                         .sort("-issueDate")
                         .exec((err, token) => {
@@ -161,8 +165,8 @@ function whenConnected() {
                             .onError(error => {
                               console.log(
                                 webhook.data.name +
-                                  " triggered with error : " +
-                                  JSON.stringify(error)
+                                " triggered with error : " +
+                                JSON.stringify(error)
                               );
                             })
                             .call(
@@ -182,149 +186,111 @@ function whenConnected() {
               } catch (ex) {
                 console.log(ex);
               }
+            } catch (ex) {
+              console.log(ex);
+            }
+          },
+          {
+            noAck: true
+          }
+        );
+      }
+    });
 
-              // switch (req.body.data.contentType) {
-              //   //#region  Vam Separ
-              //   //Vam Separ loan
-              //   case "5db301d0a1696b0017ba429d":
-              //   case "5d26e7e9375e9b001745e84e":
-              //     async.parallel(
-              //       {
-              //         approvereqeust: function(callback) {
-              //           changerequeststage(
-              //             channel,
-              //             req.body.data,
-              //             req.body.data._id,
-              //             "5d3fc2f77029a500172c5c3e",
-              //             callback
-              //           );
-              //         },
-              //         sendtopartners: function(callback) {
-              //           submittopartners(
-              //             ch,
-              //             "5d3fc9b97029a500172c5c48",
-              //             "5d6e8accc51a44001703df19",
-              //             "5d62814c0490c200171f0d71",
-              //             req.body.data,
-              //             callback
-              //           );
-              //         }
-              //       },
-              //       (error, results) => {}
-              //     );
-              //     break;
-              //   // VamSepar offer
-              //   case "5dbc1e873474cb0017d6e06a":
-              //     async.parallel(
-              //       {
-              //         changerequesttoofferrecieved: function(callback) {
-              //           changerequeststage(
-              //             channel,
-              //             req.body.data,
-              //             req.body.data.fields.requestid,
-              //             "5d3fc30a7029a500172c5c3f",
-              //             callback
-              //           );
-              //         },
-              //         approveoffer: function(callback) {
-              //           changestage(
-              //             channel,
-              //             req.body.data,
-              //             req.body.data._id,
-              //             "5d514934780b9c00170233e8",
-              //             callback
-              //           );
-              //         }
-              //       },
-              //       (error, results) => {}
-              //     );
-              //     break;
-              //   case "5d3fc7397029a500172c5c46":
-              //     async.parallel(
-              //       {
-              //         changerequesttoofferrecieved: function(callback) {
-              //           changerequeststage(
-              //             channel,
-              //             req.body.data,
-              //             req.body.data.fields.loan,
-              //             "5d3fc30a7029a500172c5c3f",
-              //             callback
-              //           );
-              //         },
-              //         approveoffer: function(callback) {
-              //           changestage(
-              //             channel,
-              //             req.body.data,
-              //             req.body.data._id,
-              //             "5d514934780b9c00170233e8",
-              //             callback
-              //           );
-              //         }
-              //       },
-              //       (error, results) => {}
-              //     );
-              //     break;
-              //   //#endregion
-              //   //#region  Startup space
-              //   //Deficated office
-              //   case "5cf7e7449916860017805408":
-              //   //Shared and private desk
-              //   case "5cfc95472606810017dca194":
-              //   ///Meeting Room
-              //   case "5cf7e7289916860017805407":
-              //     async.parallel(
-              //       {
-              //         approvereqeust: function(callback) {
-              //           changerequeststage(
-              //             channel,
-              //             req.body.data,
-              //             req.body.data.fields.requestid,
-              //             "5d6b5dd25b60dc0017c9511c",
-              //             callback
-              //           );
-              //         },
-              //         sendtopartners: function(callback) {
-              //           submittopartners_ss(
-              //             ch,
-              //             "5d358ebc8e6e9a0017c28fc9",
-              //             "assigned",
-              //             "5d58df5a74c64b0017fb45d8",
-              //             req.body.data,
-              //             callback
-              //           );
-              //         }
-              //       },
-              //       (error, results) => {}
-              //     );
-              //     break;
-
-              //   case "5d35adc68e6e9a0017c28fcb":
-              //     async.parallel(
-              //       {
-              //         changerequesttoofferrecieved: function(callback) {
-              //           changerequeststage(
-              //             channel,
-              //             req.body.data,
-              //             req.body.data.fields.requestid,
-              //             "5d7e582415586f0017d4836c",
-              //             callback
-              //           );
-              //         },
-              //         approveoffer: function(callback) {
-              //           changestage(
-              //             channel,
-              //             req.body.data,
-              //             req.body.data._id,
-              //             "5d7b968918a6400017ee1513",
-              //             callback
-              //           );
-              //         }
-              //       },
-              //       (error, results) => {}
-              //     );
-              //     break;
-              //   //#endregion
-              // }
+    ch.assertQueue("", { durable: false, exclusive: true }, (err, q) => {
+      if (!err) {
+        ch.bindQueue(q.queue, "requester", "oncustomeracceptedanoffer");
+        ch.consume(
+          q.queue,
+          function (msg) {
+            var req = JSON.parse(msg.content.toString("utf8"));
+            console.log(
+              "An offer accepted." + msg.content.toString("utf8")
+            );
+            try {
+              try {
+                async.parallel(
+                  {
+                    space: function (callback) {
+                      Spaces.findById(req.body.data.sys.spaceId).exec(
+                        (err, space) => {
+                          if (err) {
+                            callback(err, undefined);
+                          } else {
+                            callback(undefined, space);
+                          }
+                        }
+                      );
+                    },
+                    ctype: function (callback) {
+                      ContentTypes.findById(req.body.data.contentType).exec(
+                        (err, ctype) => {
+                          if (err) {
+                            callback(err, undefined);
+                          } else {
+                            callback(undefined, ctype);
+                          }
+                        }
+                      );
+                    },
+                    token: function (callback) {
+                      Tokens.findOne({ userId: req.body.data.sys.issuer })
+                        .sort("-issueDate")
+                        .exec((err, token) => {
+                          if (err) {
+                            callback(err, undefined);
+                          } else {
+                            callback(undefined, token);
+                          }
+                        });
+                    }
+                  },
+                  (errors, results) => {
+                    if (results.space) {
+                      config.space = results.space;
+                      config.contentType = results.ctype;
+                      config.token = results.token;
+                      config.userId = req.body.data.sys.issuer;
+                      config.data = req.body.data;
+                      var webhooks = config.getWebhooks(
+                        req.body.data.contentType,
+                        "oncustomeracceptedanoffer"
+                      );
+                      for (i = 0; i < webhooks.length; i++) {
+                        webhook = webhooks[i];
+                        if (webhook && webhook.func) {
+                          console.log("Start triggering " + webhook.data.name);
+                          webhook
+                            .func()
+                            .onOk(() => {
+                              console.log(
+                                webhook.data.name + " triggered successfully"
+                              );
+                            })
+                            .onError(error => {
+                              console.log(
+                                webhook.data.name +
+                                " triggered with error : " +
+                                JSON.stringify(error)
+                              );
+                            })
+                            .call(
+                              channel,
+                              config.space,
+                              config.token,
+                              config.userId,
+                              config.contentType,
+                              config.data,
+                              webhook.data.config
+                            );
+                        }
+                      }
+                    } else console.log(results);
+                  }
+                );
+              } catch (ex) {
+                console.log(ex);
+              }
             } catch (ex) {
               console.log(ex);
             }
@@ -338,184 +304,4 @@ function whenConnected() {
   });
 }
 
-var sendRPCMessage = (channel, message, rpcQueue) =>
-  new Promise(resolve => {
-    const correlationId = uuidv4();
-    // listen for the content emitted on the correlationId event
-    //channel.responseEmitter.once(correlationId, resolve);
-    channel.sendToQueue(rpcQueue, Buffer.from(JSON.stringify(message)));
-  });
-var sendnotification = function(broker, token, obj, callback) {
-  console.log("sending notification : " + token, JSON.stringify(obj));
-  if (token.deviceToken) {
-    sendRPCMessage(
-      broker,
-      {
-        body: {
-          device: token.deviceToken,
-          message: {},
-          data: {
-            type: "NEW_REQUEST"
-          }
-        }
-      },
-      "sendPushMessage"
-    ).then(result => {
-      var obj = JSON.parse(result.toString("utf8"));
-      if (!obj.success)
-        console.log(
-          "Push message not sent. Error code : " +
-            obj.error +
-            " response : " +
-            obj.data
-        );
-      else console.log("Push message successfully sent");
-    });
-  }
-  callback(undefined, obj);
-};
-
-var submittopartners_ss = function(
-  broker,
-  reqtype,
-  stage,
-  spoid,
-  obj,
-  callback
-) {
-  Contents.find({
-    contentType: "5d358ebc8e6e9a0017c28fc9",
-    status: "published",
-    "sys.spaceId": obj.sys.spaceId,
-    "fields.city": obj.fields.city
-  })
-    .select("_id name status fields")
-    .exec((err, cts) => {
-      if (err) {
-        callback(err, undefined);
-      } else {
-        for (i = 0; i < cts.length; i++) {
-          try {
-            var content = cts[i];
-            // var wf = obj.fields.workingfield ? obj.fields.workingfield : [];
-            var match = true;
-            // console.log(wf);
-            // if (content.fields) {
-            //   if (content.fields.workingfields) {
-            //     console.log(content.fields.workingfields);
-            //     for (i = 0; i < wf.length; i++) {
-            //       if (content.fields.workingfields.indexOf(wf[i]) != -1)
-            //         match = true;
-            //     }
-            //   }
-            // } else console.log("content.fields is null");
-            if (match) {
-              var fields = {};
-              fields.name = {
-                fa: obj.fields.name,
-                en: obj.fields.name
-              };
-              fields.stage = stage;
-              fields.partnerid = content._id;
-              fields.requestid = obj._id;
-              var request = new Contents({
-                fields: fields,
-                contentType: spoid
-              });
-              sendRPCMessage(
-                channel,
-                {
-                  body: request,
-                  userId: obj.sys.issuer,
-                  spaceId: obj.sys.spaceId
-                },
-                "addcontent"
-              ).then(result => {
-                var obj = JSON.parse(result.toString("utf8"));
-                if (!obj.success) {
-                  if (obj.error) {
-                    callback(err, undefined);
-                    return;
-                  }
-                } else {
-                  //do mach making and submit to partners
-                  callback(undefined, obj);
-                }
-              });
-            }
-          } catch (ex) {
-            console.log(ex);
-          }
-        }
-      }
-    });
-
-  callback(undefined, obj);
-};
-
-var changerequeststage = function(channel, obj, objId, stage, callback) {
-  try {
-    sendRPCMessage(
-      channel,
-      {
-        body: {
-          id: objId,
-          fields: {
-            stage: stage
-          }
-        },
-        userId: obj.sys.issuer,
-        spaceId: obj.sys.spaceId
-      },
-      "partialupdatecontent"
-    ).then(result => {
-      var obj = JSON.parse(result.toString("utf8"));
-      if (!obj.success) {
-        if (obj.error) {
-          callback(err, undefined);
-          return;
-        }
-      } else {
-        //do mach making and submit to partners
-        callback(undefined, obj);
-      }
-    });
-  } catch (ex) {
-    console.log(ex);
-  }
-  callback(undefined, obj);
-};
-
-var changestage = function(channel, obj, objId, stage, callback) {
-  try {
-    sendRPCMessage(
-      channel,
-      {
-        body: {
-          id: objId,
-          fields: {
-            stage: stage
-          }
-        },
-        userId: obj.sys.issuer,
-        spaceId: obj.sys.spaceId
-      },
-      "partialupdatecontent"
-    ).then(result => {
-      var obj = JSON.parse(result.toString("utf8"));
-      if (!obj.success) {
-        if (obj.error) {
-          callback(err, undefined);
-          return;
-        }
-      } else {
-        //do mach making and submit to partners
-        callback(undefined, obj);
-      }
-    });
-  } catch (ex) {
-    console.log(ex);
-  }
-  callback(undefined, obj);
-};
 start();
