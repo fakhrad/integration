@@ -34,6 +34,9 @@ function notifycustomerbyemail() {
     data,
     configuration
   ) {
+    console.log("data : ", JSON.stringify(data));
+    console.log("configuration : ", JSON.stringify(configuration));
+    console.log("space : ", JSON.stringify(space));
     try {
       if (space && data && data.fields && (data.fields.loan || data.fields.requestid)) {
         if (!configuration) configuration = {};

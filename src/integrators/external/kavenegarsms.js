@@ -55,6 +55,9 @@ function kavenegarsms() {
     data,
     configuration
   ) {
+    console.log("data : ", JSON.stringify(data));
+    console.log("configuration : ", JSON.stringify(configuration));
+    console.log("space : ", JSON.stringify(space));
     try {
       console.log("Sending sms started : " + JSON.stringify(data));
       try {
@@ -100,11 +103,11 @@ function kavenegarsms() {
   }
   return {
     call: _call,
-    onOk: function(callback) {
+    onOk: function (callback) {
       _onOkCallBack = callback;
       return this;
     },
-    onError: function(callback) {
+    onError: function (callback) {
       _onOkCallBack = callback;
       return this;
     }

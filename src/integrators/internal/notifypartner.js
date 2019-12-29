@@ -34,6 +34,10 @@ function notifypartner() {
     data,
     configuration
   ) {
+    console.log("Offer Accepted. Starting....");
+    console.log("data : ", JSON.stringify(data));
+    console.log("configuration : ", JSON.stringify(configuration));
+    console.log("space : ", JSON.stringify(space));
     try {
       if (space && data && data.fields && data.fields.partnerid) {
         if (!configuration) configuration = {};
@@ -45,8 +49,8 @@ function notifypartner() {
               userId: partner.fields.phoneNumber
                 ? partner.fields.phoneNumber
                 : partner.fields.phonenumber
-                ? partner.fields.phonenumber
-                : partner._id,
+                  ? partner.fields.phonenumber
+                  : partner._id,
               deviceToken: { $ne: token.deviceToken }
             })
               .sort("-issueDate")
@@ -67,8 +71,8 @@ function notifypartner() {
                         userId: partner.fields.phoneNumber
                           ? partner.fields.phoneNumber
                           : partner.fields.phonenumber
-                          ? partner.fields.phonenumber
-                          : partner._id,
+                            ? partner.fields.phonenumber
+                            : partner._id,
                         message: configuration
                       }
                     },
@@ -95,11 +99,11 @@ function notifypartner() {
   }
   return {
     call: _call,
-    onOk: function(callback) {
+    onOk: function (callback) {
       _onOkCallBack = callback;
       return this;
     },
-    onError: function(callback) {
+    onError: function (callback) {
       _onOkCallBack = callback;
       return this;
     }

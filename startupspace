@@ -1,0 +1,231 @@
+db.spaces.update({_id : ObjectId("5cf3883dcce4de00174d48cf")}, { "_id" : ObjectId("5cf3883dcce4de00174d48cf"), "roles": [
+        {
+            "name": "customers",
+            "title": {
+                "en": "مشتریان"
+            },
+            "type": "manager"
+        },
+        {
+            "name": "partners",
+            "title": {
+                "en": "همکاران"
+            },
+            "type": "manager"
+        },
+        {
+            "name": "support",
+            "title": {
+                "en": "پشتیبانی"
+            },
+            "type": "manager"
+        },
+        {
+            "name": "reporting",
+            "title": {
+                "en": "گزارش گیری"
+            },
+            "type": "reader"
+        }
+    ],
+    "locales": [
+        {
+            "locale": "fa",
+            "fallback": "",
+            "includeInResponce": true,
+            "editable": true,
+            "requiredFields": true,
+            "default": true
+        },
+        {
+            "locale": "en",
+            "fallback": "en",
+            "includeInResponce": false,
+            "editable": false,
+            "requiredFields": false,
+            "default": false
+        }
+    ],
+    "webhooks": [
+        {
+            "name": "ارسال به همکاران",
+            "description": "ارسال درخواست به همکاران و تغییر وضعیت درخواست",
+            "type": "submitrequest",
+            "trigger": {
+                "events": [
+                    "contentsubmitted"
+                ],
+                "contentTypes": [
+                    "5cf7e7449916860017805408",
+                    "5cfc95472606810017dca194",
+                    "5cf7e7289916860017805407"
+                ]
+            },
+            "sys": {
+                "issuer": "5cf3883dafd0b9001708b27e",
+                "issueData": "2019-10-06T16:27:46.419Z"
+            },
+            "config": {
+                "request_type": "5d358ebc8e6e9a0017c28fc9",
+                "request_stage": "5d6b5dd25b60dc0017c9511c",
+                "spo_id": "5d58df5a74c64b0017fb45d8",
+                "spo_stage": "assigned"
+            }
+        },
+        {
+            "name": "ارسال ایمیل به درخواست کننده",
+            "description": "ارسال ایمیل به درخواست کننده",
+            "type": "sendmail",
+            "trigger": {
+                "events": [
+                    "contentsubmitted"
+                ],
+                "contentTypes": [
+                    "5cf7e7449916860017805408",
+                    "5cfc95472606810017dca194",
+                    "5cf7e7289916860017805407"
+                ]
+            },
+            "sys": {
+                "issuer": "5cf3883dafd0b9001708b27e",
+                "issueData": "2019-10-06T16:27:46.419Z"
+            },
+            "config": {
+                "text": "وقت بخیر. \r\n  با تشکر از اینکه به استارتاپ اسپیس اعتماد کرده اید. درخواست شما با موفقیت ثبت گردید. برای پیگیری درخواست به لینک زیر مراجعه کنید  \r\nhttp://www.startupspace.ir/#/fa/user/myrequests \r\nتیم پشتیبانی استارتاپ اسپیس \r\n88336207-021",
+                "subject": "ثبت درخواست",
+                "from": "info@startupspace.ir"
+            }
+        },
+        {
+            "name": "ارسال پیشنهاد همکار به درخواست کننده",
+            "description": "ارسال پیشنهاد همکار به درخواست کننده",
+            "type": "submitoffer",
+            "trigger": {
+                "events": [
+                    "contentsubmitted"
+                ],
+                "contentTypes": [
+                    "5d35adc68e6e9a0017c28fcb"
+                ]
+            },
+            "sys": {
+                "issuer": "5cf3883dafd0b9001708b27e",
+                "issueData": "2019-10-06T16:27:46.419Z"
+            },
+            "config": {
+                "request_stage": "5d7e582415586f0017d4836c",
+                "offer_stage": "5d7b968918a6400017ee1513"
+            }
+        },
+        {
+            "name": "ارسال پیام درخواست جدید",
+            "description": "ارسال پیام درخواست جدید به همکاران",
+            "type": "notifypartnerbyemail",
+            "trigger": {
+                "events": [
+                    "contentsubmitted"
+                ],
+                "contentTypes": [
+                    "5d58df5a74c64b0017fb45d8"
+                ]
+            },
+            "sys": {
+                "issuer": "5cf3883dafd0b9001708b27e",
+                "issueData": "2019-10-06T16:27:46.419Z"
+            },
+            "config": {
+                "text": "وقت بخیر. \r\nشما یک درخواست جدید دارید. برای مشاهده درخواست به صفحه مدیریت درخواستها مراجعه کنید \r\n https://www.startupspace.ir/#/fa/partnerpanel/panel \r\nتیم پشتیبانی استارتاپ اسپیس \r\n88336207-021",
+                "subject": "درخواست جدید",
+                "from": "info@startupspace.ir"
+            }
+        },
+        {
+            "name": "قبول شدن پیشنهاد توسط مشتری",
+            "description": "ارسال پیام پذیرفته شدن پیشنهاد توسط مشتری",
+            "type": "notifypartnerbysms",
+            "trigger": {
+                "events": [
+                    "oncustomeracceptedanoffer"
+                ],
+                "contentTypes": [
+                    "5d35adc68e6e9a0017c28fcb"
+                ]
+            },
+            "sys": {
+                "issuer": "5cf3883dafd0b9001708b27e",
+                "issueData": "2019-10-06T16:27:46.419Z"
+            },
+            "config": {
+                "message": "1",
+                "template": "startupspaceofferaccepted"
+            }
+        },
+        {
+            "name": "ایمیل قبول شدن پیشنهاد توسط مشتری",
+            "description": "ارسال ایمیل پذیرفته شدن پیشنهاد توسط مشتری",
+            "type": "notifypartnerbyemail",
+            "trigger": {
+                "events": [
+                    "oncustomeracceptedanoffer"
+                ],
+                "contentTypes": [
+                    "5d35adc68e6e9a0017c28fcb"
+                ]
+            },
+            "sys": {
+                "issuer": "5cf3883dafd0b9001708b27e",
+                "issueData": "2019-10-06T16:27:46.419Z"
+            },
+            "config": {
+                "text": "وقت بخیر\r\n  تبریک پیشنهاد شما پذیرفته شد. برای پیگیری به قسمت پیشنهادهای پذیرفته شده در پنل همکاران مراجعه کنید \r\nتیم پشتیبانی استارتاپ اسپیس \r\n 88336207-021",
+                "subject": "تبریک! پیشنهاد شما پذیرفته شد",
+                "from": "info@startupspace.ir"
+            }
+        },
+        {
+            "name": "اطلاع رسانی پیشنهاد به درخواست کننده",
+            "description": "ارسال ایمیل اطلاع رسانی پیشنهاد به درخواست کننده",
+            "type": "notifycustomerbyemail",
+            "trigger": {
+                "events": [
+                    "offerissued"
+                ],
+                "contentTypes": [
+                    "5d35adc68e6e9a0017c28fcb"
+                ]
+            },
+            "sys": {
+                "issuer": "5cf3883dafd0b9001708b27e",
+                "issueData": "2019-10-06T16:27:46.419Z"
+            },
+            "config": {
+                "subject": "ارسال پیشنهاد جدید در استارتاپ اسپیس",
+                "text": "شما یک پیشنهاد جدید در استارتاپ اسپیس دارید. برای مشاهده به قسمت صفحه من در وبسایت مراجعه کنید.\r\nباجه",
+                "from": "info@startupspae.ir"
+            }
+        },
+        {
+            "name": "اطلاع رسانی پیشنهاد به درخواست کننده",
+            "description": "ارسال پیام اطلاع رسانی پیشنهاد به درخواست کننده",
+            "type": "notifycusomterbysms",
+            "trigger": {
+                "events": [
+                    "offerissued"
+                ],
+                "contentTypes": [
+                    "5d35adc68e6e9a0017c28fcb"
+                ]
+            },
+            "sys": {
+                "issuer": "5cf3883dafd0b9001708b27e",
+                "issueData": "2019-10-06T16:27:46.419Z"
+            },
+            "config": {
+                "message": "1",
+                "template": "startupspaceofferissued"
+            }
+        }
+    ],
+    "name": "Startup Space",
+    "type": "free", "owner" : ObjectId("5cf3883dafd0b9001708b27e"), "__v" : 17 }
+, {upsert : true})

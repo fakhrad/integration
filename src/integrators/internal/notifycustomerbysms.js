@@ -35,6 +35,9 @@ function notifycusomterbysms() {
     data,
     configuration
   ) {
+    console.log("data : ", JSON.stringify(data));
+    console.log("configuration : ", JSON.stringify(configuration));
+    console.log("space : ", JSON.stringify(space));
     try {
       if (space && data && data.fields && data.fields.partnerid) {
         if (!configuration) configuration = {};

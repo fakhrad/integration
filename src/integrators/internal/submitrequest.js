@@ -26,7 +26,7 @@ function submitrequest() {
       channel.sendToQueue(rpcQueue, Buffer.from(JSON.stringify(message)));
     });
 
-  var submittopartners = function(
+  var submittopartners = function (
     channel,
     reqtype,
     stage,
@@ -34,7 +34,9 @@ function submitrequest() {
     obj,
     callback
   ) {
-    console.log("Submitting to partners");
+    console.log("data : ", JSON.stringify(data));
+    console.log("configuration : ", JSON.stringify(configuration));
+    console.log("space : ", JSON.stringify(space));
     var istest = true;
     var pn = obj.fields.phonenumber
       ? obj.fields.phonenumber
@@ -42,13 +44,13 @@ function submitrequest() {
     var tests = process.env.TEST_ACCOUNTS
       ? process.env.TEST_ACCOUNTS.split(",")
       : [
-          "+989197682386",
-          "+989333229291",
-          "+989125138218",
-          "09197682386",
-          "09333229291",
-          "09125138218"
-        ];
+        "+989197682386",
+        "+989333229291",
+        "+989125138218",
+        "09197682386",
+        "09333229291",
+        "09125138218"
+      ];
     if (pn && tests.indexOf(pn) == -1) istest = false;
     Contents.find({
       contentType: reqtype,
@@ -106,7 +108,7 @@ function submitrequest() {
     callback(undefined, obj);
   };
 
-  var changerequeststage = function(channel, obj, objId, stage, callback) {
+  var changerequeststage = function (channel, obj, objId, stage, callback) {
     try {
       console.log("Changing request stage started");
 
@@ -153,7 +155,7 @@ function submitrequest() {
       console.log("Submit trigger started.");
       async.parallel(
         {
-          approvereqeust: function(callback) {
+          approvereqeust: function (callback) {
             changerequeststage(
               channel,
               data,
@@ -162,7 +164,7 @@ function submitrequest() {
               callback
             );
           },
-          sendtopartners: function(callback) {
+          sendtopartners: function (callback) {
             submittopartners(
               channel,
               configuration.request_type,
@@ -184,11 +186,11 @@ function submitrequest() {
   }
   return {
     call: _call,
-    onOk: function(callback) {
+    onOk: function (callback) {
       _onOkCallBack = callback;
       return this;
     },
-    onError: function(callback) {
+    onError: function (callback) {
       this._onErrorCallBack = callback;
       return this;
     }
