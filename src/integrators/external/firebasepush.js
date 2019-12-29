@@ -20,7 +20,7 @@ function sendFirebasepush() {
       const correlationId = uuidv4();
       // listen for the content emitted on the correlationId event
       //channel.responseEmitter.once(correlationId, resolve);
-      //channel.sendToQueue(rpcQueue, Buffer.from(JSON.stringify(message)));
+      channel.sendToQueue(rpcQueue, Buffer.from(JSON.stringify(message)));
     });
 
   function _call(
@@ -32,20 +32,28 @@ function sendFirebasepush() {
     data,
     configuration
   ) {
+    console.log("Firebase push message. Starting....");
+    console.log("data : ", JSON.stringify(data));
+    console.log("configuration : ", JSON.stringify(configuration));
+    console.log("space : ", JSON.stringify(space));
+    console.log("token : ", JSON.stringify(token));
+    console.log("userId : ", userId);
     try {
-      if (space && process.env.PUSH_ENABLED == "true") {
+      if (space) {
         if (!configuration) configuration = {};
+        var bd = {
+          clientId: space._id.toString(),
+          device: token.deviceToken,
+          contentType: contentType ? contentType._id.toString() : "",
+          data: undefined,
+          userId: userId.toString(),
+          message: configuration
+        }
+        console.log(bd);
         sendRPCMessage(
           channel,
           {
-            body: {
-              clientId: space._id.toString(),
-              device: token.deviceToken,
-              contentType: contentType ? contentType._id.toString() : "",
-              data: undefined,
-              userId: userId.toString(),
-              message: configuration
-            }
+            body: bd
           },
           "sendPushMessage"
         ).then(result => {

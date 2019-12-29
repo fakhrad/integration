@@ -176,7 +176,7 @@ db.spaces.update({_id : ObjectId("5d26e793375e9b001745e84d")}, {"_id": ObjectId(
         {
             "name": "قبول شدن پیشنهاد توسط مشتری",
             "description": "ارسال پیام پذیرفته شدن پیشنهاد توسط مشتری",
-            "type": "offeraccepted",
+            "type": "notifypartnerbysms",
             "trigger": {
                 "events": [
                     "oncustomeracceptedanoffer"
@@ -193,6 +193,74 @@ db.spaces.update({_id : ObjectId("5d26e793375e9b001745e84d")}, {"_id": ObjectId(
             "config": {
                 "message": "1",
                 "template": "offeraccepted"
+            }
+        },
+        {
+            "name": "ایمیل قبول شدن پیشنهاد توسط مشتری",
+            "description": "ارسال ایمیل پذیرفته شدن پیشنهاد توسط مشتری",
+            "type": "notifypartnerbyemail",
+            "trigger": {
+                "events": [
+                    "oncustomeracceptedanoffer"
+                ],
+                "contentTypes": [
+                    "5dbc1e873474cb0017d6e06a",
+                    "5d3fc7397029a500172c5c46"
+                ]
+            },
+            "sys": {
+                "issuer": "5cf3883dafd0b9001708b27e",
+                "issueData": "2019-10-06T16:27:46.419Z"
+            },
+            "config": {
+                "text": "وقت بخیر\r\n  تبریک پیشنهاد شما پذیرفته شد. برای پیگیری به اپلیکیشن مراجعه کنید \r\nتیم پشتیبانی باجه \r\n 28421147-021",
+                "subject": "تبریک! پیشنهاد شما پذیرفته شد",
+                "from": "info@baajeh.com"
+            }
+        },
+        {
+            "name": "اطلاع رسانی پیشنهاد به درخواست کننده",
+            "description": "ارسال پیام اطلاع رسانی پیشنهاد به درخواست کننده",
+            "type": "notifycustomerbyemail",
+            "trigger": {
+                "events": [
+                    "offerissued"
+                ],
+                "contentTypes": [
+                    "5dbc1e873474cb0017d6e06a",
+                    "5d3fc7397029a500172c5c46"
+                ]
+            },
+            "sys": {
+                "issuer": "5cf3883dafd0b9001708b27e",
+                "issueData": "2019-10-06T16:27:46.419Z"
+            },
+            "config": {
+                "subject": "ارسال پیشنهاد جدید در باجه",
+                "text": "شما یک پیشنهاد جدید در باجه دارید. برای مشاهده به قسمت پیگیری درخواستها در اپلیکیشن مراجعه کنید.\r\nباجه",
+                "from" : "info@baajeh.com"
+            }
+        },
+        {
+            "name": "اطلاع رسانی پیشنهاد به درخواست کننده",
+            "description": "ارسال ایمیل اطلاع رسانی پیشنهاد به درخواست کننده",
+            "type": "notifycusomterbysms",
+            "trigger": {
+                "events": [
+                    "offerissued"
+                ],
+                "contentTypes": [
+                    "5dbc1e873474cb0017d6e06a",
+                    "5d3fc7397029a500172c5c46"
+                ]
+            },
+            "sys": {
+                "issuer": "5cf3883dafd0b9001708b27e",
+                "issueData": "2019-10-06T16:27:46.419Z"
+            },
+            "config": {
+                "message" : "1",
+                "template" : "offerissued"
             }
         }
     ],

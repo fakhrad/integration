@@ -18,6 +18,8 @@ require("./integrators/external/kavenegarsms");
 require("./integrators/internal/notifypartnerbyemail");
 require("./integrators/internal/notifypartnerbyesms");
 require("./integrators/internal/offeraccepted");
+require("./integrators/internal/notifycustomerbyemail");
+require("./integrators/internal/notifycustomerbysms");
 var rabbitHost =
   process.env.RABBITMQ_HOST ||
   "amqp://fakhrad:logrezaee24359@queue.reqter.com";
@@ -255,6 +257,111 @@ function whenConnected() {
                       var webhooks = config.getWebhooks(
                         req.body.data.contentType,
                         "oncustomeracceptedanoffer"
+                      );
+                      for (i = 0; i < webhooks.length; i++) {
+                        webhook = webhooks[i];
+                        if (webhook && webhook.func) {
+                          console.log("Start triggering " + webhook.data.name);
+                          webhook
+                            .func()
+                            .onOk(() => {
+                              console.log(
+                                webhook.data.name + " triggered successfully"
+                              );
+                            })
+                            .onError(error => {
+                              console.log(
+                                webhook.data.name +
+                                " triggered with error : " +
+                                JSON.stringify(error)
+                              );
+                            })
+                            .call(
+                              channel,
+                              config.space,
+                              config.token,
+                              config.userId,
+                              config.contentType,
+                              config.data,
+                              webhook.data.config
+                            );
+                        }
+                      }
+                    } else console.log(results);
+                  }
+                );
+              } catch (ex) {
+                console.log(ex);
+              }
+            } catch (ex) {
+              console.log(ex);
+            }
+          },
+          {
+            noAck: true
+          }
+        );
+      }
+    });
+
+    ch.assertQueue("", { durable: false, exclusive: true }, (err, q) => {
+      if (!err) {
+        ch.bindQueue(q.queue, "requester", "onofferissued");
+        ch.consume(
+          q.queue,
+          function (msg) {
+            var req = JSON.parse(msg.content.toString("utf8"));
+            console.log(
+              "An offer Issued : " + msg.content.toString("utf8")
+            );
+            try {
+              try {
+                async.parallel(
+                  {
+                    space: function (callback) {
+                      Spaces.findById(req.body.data.sys.spaceId).exec(
+                        (err, space) => {
+                          if (err) {
+                            callback(err, undefined);
+                          } else {
+                            callback(undefined, space);
+                          }
+                        }
+                      );
+                    },
+                    ctype: function (callback) {
+                      ContentTypes.findById(req.body.data.contentType).exec(
+                        (err, ctype) => {
+                          if (err) {
+                            callback(err, undefined);
+                          } else {
+                            callback(undefined, ctype);
+                          }
+                        }
+                      );
+                    },
+                    token: function (callback) {
+                      Tokens.findOne({ userId: req.body.data.sys.issuer })
+                        .sort("-issueDate")
+                        .exec((err, token) => {
+                          if (err) {
+                            callback(err, undefined);
+                          } else {
+                            callback(undefined, token);
+                          }
+                        });
+                    }
+                  },
+                  (errors, results) => {
+                    if (results.space) {
+                      config.space = results.space;
+                      config.contentType = results.ctype;
+                      config.token = results.token;
+                      config.userId = req.body.data.sys.issuer;
+                      config.data = req.body.data;
+                      var webhooks = config.getWebhooks(
+                        req.body.data.contentType,
+                        "offerissued"
                       );
                       for (i = 0; i < webhooks.length; i++) {
                         webhook = webhooks[i];

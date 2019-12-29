@@ -1,8 +1,8 @@
 const config = require("../../config");
 const uuidv4 = require("uuid/v4");
-const Partners = require("../../models/content");
+const Customers = require("../../models/content");
 const Tokens = require("../../models/token");
-function notifypartnerbyemail() {
+function notifycustomerbyemail() {
   var _onOkCallBack;
   function _onOk(result) {
     if (_onOkCallBack) {
@@ -35,18 +35,18 @@ function notifypartnerbyemail() {
     configuration
   ) {
     try {
-      if (space && data && data.fields && data.fields.partnerid) {
+      if (space && data && data.fields && (data.fields.loan || data.fields.requestid)) {
         if (!configuration) configuration = {};
-        Partners.findById(data.fields.partnerid).exec((err, partner) => {
+        Customers.findById(data.fields.loan ? data.fields.loan : data.fields.requestid).exec((err, customer) => {
           if (
             err ||
-            !partner ||
-            (partner && !partner.fields) ||
-            (partner && partner.fields && !partner.fields.email)
+            !customer ||
+            (customer && !customer.fields) ||
+            (customer && customer.fields && !customer.fields.email)
           ) {
             _onError(err, undefined);
           } else {
-            configuration.to = partner.fields.email;
+            configuration.to = customer.fields.email;
             configuration.subject = data.fields.name.fa
               ? data.fields.name.fa
               : data.fields.name.en
@@ -59,7 +59,7 @@ function notifypartnerbyemail() {
                   clientId: space._id.toString(),
                   contentType: contentType ? contentType._id.toString() : "",
                   data: data,
-                  userId: partner._id,
+                  userId: customer._id,
                   message: configuration
                 }
               },
@@ -95,5 +95,5 @@ function notifypartnerbyemail() {
   };
 }
 
-config.webhooks.notifypartnerbyemail = notifypartnerbyemail;
-exports.notifypartnerbyemail = notifypartnerbyemail;
+config.webhooks.notifycustomerbyemail = notifycustomerbyemail;
+exports.notifycustomerbyemail = notifycustomerbyemail;
