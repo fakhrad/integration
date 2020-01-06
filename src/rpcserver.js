@@ -142,7 +142,7 @@ function whenConnected() {
                         });
                     }
                   },
-                  (errors, results) => {
+                  async (errors, results) => {
                     if (results.space) {
                       config.space = results.space;
                       config.contentType = results.ctype;
@@ -204,7 +204,7 @@ function whenConnected() {
         ch.bindQueue(q.queue, "requester", "oncustomeracceptedanoffer");
         ch.consume(
           q.queue,
-          function (msg) {
+          async function (msg) {
             var req = JSON.parse(msg.content.toString("utf8"));
             console.log(
               "An offer accepted." + msg.content.toString("utf8")
@@ -247,7 +247,7 @@ function whenConnected() {
                         });
                     }
                   },
-                  (errors, results) => {
+                  async (errors, results) => {
                     if (results.space) {
                       config.space = results.space;
                       config.contentType = results.ctype;
@@ -262,7 +262,7 @@ function whenConnected() {
                         webhook = webhooks[i];
                         if (webhook && webhook.func) {
                           console.log("Start triggering " + webhook.data.name);
-                          webhook
+                          await webhook
                             .func()
                             .onOk(() => {
                               console.log(
@@ -352,7 +352,7 @@ function whenConnected() {
                         });
                     }
                   },
-                  (errors, results) => {
+                  async (errors, results) => {
                     if (results.space) {
                       config.space = results.space;
                       config.contentType = results.ctype;
@@ -367,7 +367,7 @@ function whenConnected() {
                         webhook = webhooks[i];
                         if (webhook && webhook.func) {
                           console.log("Start triggering " + webhook.data.name);
-                          webhook
+                          await webhook
                             .func()
                             .onOk(() => {
                               console.log(

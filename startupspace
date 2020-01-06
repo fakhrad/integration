@@ -91,7 +91,7 @@ db.spaces.update({_id : ObjectId("5cf3883dcce4de00174d48cf")}, { "_id" : ObjectI
                 "issueData": "2019-10-06T16:27:46.419Z"
             },
             "config": {
-                "text": "وقت بخیر. \r\n  با تشکر از اینکه به استارتاپ اسپیس اعتماد کرده اید. درخواست شما با موفقیت ثبت گردید. برای پیگیری درخواست به لینک زیر مراجعه کنید  \r\nhttp://www.startupspace.ir/#/fa/user/myrequests \r\nتیم پشتیبانی استارتاپ اسپیس \r\n88336207-021",
+                "text": "وقت بخیر. \r\n  با تشکر از اینکه به استارتاپ اسپیس اعتماد کرده اید. درخواست شما با موفقیت ثبت گردید. برای پیگیری درخواست به لینک زیر مراجعه کنید  \r\nhttp://www.startupspace.ir/#/fa/user/myrequests \r\nتیم پشتیبانی استارتاپ اسپیس \r\n",
                 "subject": "ثبت درخواست",
                 "from": "info@startupspace.ir"
             }
@@ -134,7 +134,7 @@ db.spaces.update({_id : ObjectId("5cf3883dcce4de00174d48cf")}, { "_id" : ObjectI
                 "issueData": "2019-10-06T16:27:46.419Z"
             },
             "config": {
-                "text": "وقت بخیر. \r\nشما یک درخواست جدید دارید. برای مشاهده درخواست به صفحه مدیریت درخواستها مراجعه کنید \r\n https://www.startupspace.ir/#/fa/partnerpanel/panel \r\nتیم پشتیبانی استارتاپ اسپیس \r\n88336207-021",
+                "text": "وقت بخیر. \r\nشما یک درخواست جدید دارید. برای مشاهده درخواست به صفحه مدیریت درخواستها مراجعه کنید \r\n https://www.startupspace.ir/#/fa/partnerpanel/panel \r\nتیم پشتیبانی استارتاپ اسپیس \r\n",
                 "subject": "درخواست جدید",
                 "from": "info@startupspace.ir"
             }
@@ -156,7 +156,7 @@ db.spaces.update({_id : ObjectId("5cf3883dcce4de00174d48cf")}, { "_id" : ObjectI
                 "issueData": "2019-10-06T16:27:46.419Z"
             },
             "config": {
-                "message": "1",
+                "message": "۱",
                 "template": "startupspaceofferaccepted"
             }
         },
@@ -177,7 +177,7 @@ db.spaces.update({_id : ObjectId("5cf3883dcce4de00174d48cf")}, { "_id" : ObjectI
                 "issueData": "2019-10-06T16:27:46.419Z"
             },
             "config": {
-                "text": "وقت بخیر\r\n  تبریک پیشنهاد شما پذیرفته شد. برای پیگیری به قسمت پیشنهادهای پذیرفته شده در پنل همکاران مراجعه کنید \r\nتیم پشتیبانی استارتاپ اسپیس \r\n 88336207-021",
+                "text": "وقت بخیر\r\n  تبریک پیشنهاد شما پذیرفته شد. برای پیگیری به قسمت پیشنهادهای پذیرفته شده در پنل همکاران مراجعه کنید \r\nتیم پشتیبانی استارتاپ اسپیس \r\n",
                 "subject": "تبریک! پیشنهاد شما پذیرفته شد",
                 "from": "info@startupspace.ir"
             }
@@ -200,7 +200,7 @@ db.spaces.update({_id : ObjectId("5cf3883dcce4de00174d48cf")}, { "_id" : ObjectI
             },
             "config": {
                 "subject": "ارسال پیشنهاد جدید در استارتاپ اسپیس",
-                "text": "شما یک پیشنهاد جدید در استارتاپ اسپیس دارید. برای مشاهده به قسمت صفحه من در وبسایت مراجعه کنید.\r\nباجه",
+                "text": "شما یک پیشنهاد جدید در استارتاپ اسپیس دارید. برای مشاهده به قسمت صفحه من در وبسایت مراجعه کنید.\r\n https://www.startupspace.ir",
                 "from": "info@startupspae.ir"
             }
         },
@@ -221,7 +221,7 @@ db.spaces.update({_id : ObjectId("5cf3883dcce4de00174d48cf")}, { "_id" : ObjectI
                 "issueData": "2019-10-06T16:27:46.419Z"
             },
             "config": {
-                "message": "1",
+                "message": "۱",
                 "template": "startupspaceofferissued"
             }
         }

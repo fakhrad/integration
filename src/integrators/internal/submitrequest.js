@@ -34,9 +34,6 @@ function submitrequest() {
     obj,
     callback
   ) {
-    console.log("data : ", JSON.stringify(data));
-    console.log("configuration : ", JSON.stringify(configuration));
-    console.log("space : ", JSON.stringify(space));
     var istest = true;
     var pn = obj.fields.phonenumber
       ? obj.fields.phonenumber
@@ -151,6 +148,9 @@ function submitrequest() {
     data,
     configuration
   ) {
+    console.log("data : ", JSON.stringify(data));
+    console.log("configuration : ", JSON.stringify(configuration));
+    console.log("space : ", JSON.stringify(space));
     try {
       console.log("Submit trigger started.");
       async.parallel(
