@@ -53,7 +53,7 @@ db.spaces.update({_id : ObjectId("5cf3883dcce4de00174d48cf")}, { "_id" : ObjectI
             "type": "submitrequest",
             "trigger": {
                 "events": [
-                    "contentsubmitted"
+                    "contentpublished"
                 ],
                 "contentTypes": [
                     "5cf7e7449916860017805408",
@@ -70,6 +70,32 @@ db.spaces.update({_id : ObjectId("5cf3883dcce4de00174d48cf")}, { "_id" : ObjectI
                 "request_stage": "5d6b5dd25b60dc0017c9511c",
                 "spo_id": "5d58df5a74c64b0017fb45d8",
                 "spo_stage": "assigned"
+            }
+        },
+        {
+            "name": "ارسال به پشتیبانی",
+            "description": "ارسال درخواست به پشتیبان سیستم",
+            "type": "sendmail",
+            "trigger": {
+                "events": [
+                    "contentcreated"
+                ],
+                "contentTypes": [
+                    "5cf7e7449916860017805408",
+                    "5cfc95472606810017dca194",
+                    "5cf7e7289916860017805407",
+                    "5d358ebc8e6e9a0017c28fc9"
+                ]
+            },
+            "sys": {
+                "issuer": "5cf3883dafd0b9001708b27e",
+                "issueData": "2019-10-06T16:27:46.419Z"
+            },
+            "config": {
+                "text": "وقت بخیر. \r\nشما یک درخواست جدید دارید. برای مشاهده درخواست به صفحه مدیریت درخواستها مراجعه کنید \r\n https://www.startupspace.ir/#/fa/partnerpanel/panel \r\nتیم پشتیبانی استارتاپ اسپیس \r\n",
+                "subject": "درخواست جدید",
+                "from": "info@startupspace.ir",
+                "to" : "startupspaceservice@gmail.com"
             }
         },
         {
@@ -183,6 +209,28 @@ db.spaces.update({_id : ObjectId("5cf3883dcce4de00174d48cf")}, { "_id" : ObjectI
             }
         },
         {
+            "name": "ایمیل رد شدن پیشنهاد توسط مشتری",
+            "description": "ارسال ایمیل رد شدن پیشنهاد توسط مشتری",
+            "type": "notifypartnerbyemail",
+            "trigger": {
+                "events": [
+                    "oncustomerrejectedanoffer"
+                ],
+                "contentTypes": [
+                    "5d35adc68e6e9a0017c28fcb"
+                ]
+            },
+            "sys": {
+                "issuer": "5cf3883dafd0b9001708b27e",
+                "issueData": "2019-10-06T16:27:46.419Z"
+            },
+            "config": {
+                "text": "وقت بخیر\r\n  رد شدن پیشنهاد شما توسط مشتری. برای پیگیری به قسمت پیشنهادهای رد شده در پنل همکاران مراجعه کنید \r\nتیم پشتیبانی استارتاپ اسپیس \r\n",
+                "subject": "پیشنهاد شما توسط مشتری رد شد",
+                "from": "info@startupspace.ir"
+            }
+        },
+        {
             "name": "اطلاع رسانی پیشنهاد به درخواست کننده",
             "description": "ارسال ایمیل اطلاع رسانی پیشنهاد به درخواست کننده",
             "type": "notifycustomerbyemail",
@@ -201,7 +249,7 @@ db.spaces.update({_id : ObjectId("5cf3883dcce4de00174d48cf")}, { "_id" : ObjectI
             "config": {
                 "subject": "ارسال پیشنهاد جدید در استارتاپ اسپیس",
                 "text": "شما یک پیشنهاد جدید در استارتاپ اسپیس دارید. برای مشاهده به قسمت صفحه من در وبسایت مراجعه کنید.\r\n https://www.startupspace.ir",
-                "from": "info@startupspae.ir"
+                "from": "info@startupspace.ir"
             }
         },
         {

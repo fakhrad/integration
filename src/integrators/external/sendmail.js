@@ -47,7 +47,7 @@ function sendmail() {
               clientId: space._id.toString(),
               contentType: contentType._id.toString(),
               data: data,
-              userId: userId.toString(),
+              userId: userId ? userId.toString() : undefined,
               message: configuration
             }
           },

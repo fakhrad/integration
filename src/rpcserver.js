@@ -96,6 +96,215 @@ function whenConnected() {
 
     ch.assertQueue("", { durable: false, exclusive: true }, (err, q) => {
       if (!err) {
+        ch.bindQueue(q.queue, "contentservice", "contentpublished");
+        ch.consume(
+          q.queue,
+          function (msg) {
+            var req = JSON.parse(msg.content.toString("utf8"));
+            console.log(
+              "New content published." + msg.content.toString("utf8")
+            );
+            try {
+              try {
+                async.parallel(
+                  {
+                    space: function (callback) {
+                      Spaces.findById(req.body.sys.spaceId).exec(
+                        (err, space) => {
+                          if (err) {
+                            callback(err, undefined);
+                          } else {
+                            callback(undefined, space);
+                          }
+                        }
+                      );
+                    },
+                    ctype: function (callback) {
+                      ContentTypes.findById(req.body.contentType).exec(
+                        (err, ctype) => {
+                          if (err) {
+                            callback(err, undefined);
+                          } else {
+                            callback(undefined, ctype);
+                          }
+                        }
+                      );
+                    },
+                    token: function (callback) {
+                      Tokens.findOne({ userId: req.body.sys.issuer })
+                        .sort("-issueDate")
+                        .exec((err, token) => {
+                          if (err) {
+                            callback(err, undefined);
+                          } else {
+                            callback(undefined, token);
+                          }
+                        });
+                    }
+                  },
+                  async (errors, results) => {
+                    if (results.space) {
+                      config.space = results.space;
+                      config.contentType = results.ctype;
+                      config.token = results.token;
+                      config.userId = req.body.sys.issuer;
+                      config.data = req.body;
+                      var webhooks = config.getWebhooks(
+                        req.body.contentType,
+                        "contentpublished"
+                      );
+                      for (i = 0; i < webhooks.length; i++) {
+                        webhook = webhooks[i];
+                        if (webhook && webhook.func) {
+                          console.log("Start triggering " + webhook.data.name);
+                          webhook
+                            .func()
+                            .onOk(() => {
+                              console.log(
+                                webhook.data.name + " triggered successfully"
+                              );
+                            })
+                            .onError(error => {
+                              console.log(
+                                webhook.data.name +
+                                " triggered with error : " +
+                                JSON.stringify(error)
+                              );
+                            })
+                            .call(
+                              channel,
+                              config.space,
+                              config.token,
+                              config.userId,
+                              config.contentType,
+                              config.data,
+                              webhook.data.config
+                            );
+                        }
+                      }
+                    } else console.log(results);
+                  }
+                );
+              } catch (ex) {
+                console.log(ex);
+              }
+            } catch (ex) {
+              console.log(ex);
+            }
+          },
+          {
+            noAck: true
+          }
+        );
+      }
+    });
+
+    ch.assertQueue("", { durable: false, exclusive: true }, (err, q) => {
+      if (!err) {
+        ch.bindQueue(q.queue, "contentservice", "contentcreated");
+        ch.consume(
+          q.queue,
+          function (msg) {
+            var req = JSON.parse(msg.content.toString("utf8"));
+            console.log(
+              "New content created." + msg.content.toString("utf8")
+            );
+            try {
+              try {
+                async.parallel(
+                  {
+                    space: function (callback) {
+                      Spaces.findById(req.body.sys.spaceId).exec(
+                        (err, space) => {
+                          if (err) {
+                            callback(err, undefined);
+                          } else {
+                            callback(undefined, space);
+                          }
+                        }
+                      );
+                    },
+                    ctype: function (callback) {
+                      ContentTypes.findById(req.body.contentType).exec(
+                        (err, ctype) => {
+                          if (err) {
+                            callback(err, undefined);
+                          } else {
+                            callback(undefined, ctype);
+                          }
+                        }
+                      );
+                    },
+                    token: function (callback) {
+                      Tokens.findOne({ userId: req.body.sys.issuer })
+                        .sort("-issueDate")
+                        .exec((err, token) => {
+                          if (err) {
+                            callback(err, undefined);
+                          } else {
+                            callback(undefined, token);
+                          }
+                        });
+                    }
+                  },
+                  async (errors, results) => {
+                    if (results.space) {
+                      config.space = results.space;
+                      config.contentType = results.ctype;
+                      config.token = results.token;
+                      config.userId = req.body.sys.issuer;
+                      config.data = req.body;
+                      var webhooks = config.getWebhooks(
+                        req.body.contentType,
+                        "contentcreated"
+                      );
+                      for (i = 0; i < webhooks.length; i++) {
+                        webhook = webhooks[i];
+                        if (webhook && webhook.func) {
+                          console.log("Start triggering " + webhook.data.name);
+                          webhook
+                            .func()
+                            .onOk(() => {
+                              console.log(
+                                webhook.data.name + " triggered successfully"
+                              );
+                            })
+                            .onError(error => {
+                              console.log(
+                                webhook.data.name +
+                                " triggered with error : " +
+                                JSON.stringify(error)
+                              );
+                            })
+                            .call(
+                              channel,
+                              config.space,
+                              config.token,
+                              config.userId,
+                              config.contentType,
+                              config.data,
+                              webhook.data.config
+                            );
+                        }
+                      }
+                    } else console.log(results);
+                  }
+                );
+              } catch (ex) {
+                console.log(ex);
+              }
+            } catch (ex) {
+              console.log(ex);
+            }
+          },
+          {
+            noAck: true
+          }
+        );
+      }
+    });
+    ch.assertQueue("", { durable: false, exclusive: true }, (err, q) => {
+      if (!err) {
         ch.bindQueue(q.queue, "contentservice", "contentsubmitted");
         ch.consume(
           q.queue,
@@ -304,6 +513,110 @@ function whenConnected() {
       }
     });
 
+    ch.assertQueue("", { durable: false, exclusive: true }, (err, q) => {
+      if (!err) {
+        ch.bindQueue(q.queue, "requester", "oncustomerrejectedanoffer");
+        ch.consume(
+          q.queue,
+          async function (msg) {
+            var req = JSON.parse(msg.content.toString("utf8"));
+            console.log(
+              "An offer rejected." + msg.content.toString("utf8")
+            );
+            try {
+              try {
+                async.parallel(
+                  {
+                    space: function (callback) {
+                      Spaces.findById(req.body.data.sys.spaceId).exec(
+                        (err, space) => {
+                          if (err) {
+                            callback(err, undefined);
+                          } else {
+                            callback(undefined, space);
+                          }
+                        }
+                      );
+                    },
+                    ctype: function (callback) {
+                      ContentTypes.findById(req.body.data.contentType).exec(
+                        (err, ctype) => {
+                          if (err) {
+                            callback(err, undefined);
+                          } else {
+                            callback(undefined, ctype);
+                          }
+                        }
+                      );
+                    },
+                    token: function (callback) {
+                      Tokens.findOne({ userId: req.body.data.sys.issuer })
+                        .sort("-issueDate")
+                        .exec((err, token) => {
+                          if (err) {
+                            callback(err, undefined);
+                          } else {
+                            callback(undefined, token);
+                          }
+                        });
+                    }
+                  },
+                  async (errors, results) => {
+                    if (results.space) {
+                      config.space = results.space;
+                      config.contentType = results.ctype;
+                      config.token = results.token;
+                      config.userId = req.body.data.sys.issuer;
+                      config.data = req.body.data;
+                      var webhooks = config.getWebhooks(
+                        req.body.data.contentType,
+                        "oncustomerrejectedanoffer"
+                      );
+                      for (i = 0; i < webhooks.length; i++) {
+                        webhook = webhooks[i];
+                        if (webhook && webhook.func) {
+                          console.log("Start triggering " + webhook.data.name);
+                          await webhook
+                            .func()
+                            .onOk(() => {
+                              console.log(
+                                webhook.data.name + " triggered successfully"
+                              );
+                            })
+                            .onError(error => {
+                              console.log(
+                                webhook.data.name +
+                                " triggered with error : " +
+                                JSON.stringify(error)
+                              );
+                            })
+                            .call(
+                              channel,
+                              config.space,
+                              config.token,
+                              config.userId,
+                              config.contentType,
+                              config.data,
+                              webhook.data.config
+                            );
+                        }
+                      }
+                    } else console.log(results);
+                  }
+                );
+              } catch (ex) {
+                console.log(ex);
+              }
+            } catch (ex) {
+              console.log(ex);
+            }
+          },
+          {
+            noAck: true
+          }
+        );
+      }
+    });
     ch.assertQueue("", { durable: false, exclusive: true }, (err, q) => {
       if (!err) {
         ch.bindQueue(q.queue, "requester", "onofferissued");

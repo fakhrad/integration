@@ -67,6 +67,38 @@ function submitoffer() {
     callback(undefined, obj);
   };
 
+  var publish_content = function (channel, obj, objId, stage, callback) {
+    try {
+      console.log("Publish content started");
+
+      sendRPCMessage(
+        channel,
+        {
+          body: {
+            id: objId
+          },
+          userId: obj.sys.issuer,
+          spaceId: obj.sys.spaceId
+        },
+        "publishcontent"
+      ).then(result => {
+        var obj = JSON.parse(result.toString("utf8"));
+        if (!obj.success) {
+          if (obj.error) {
+            callback(err, undefined);
+            return;
+          }
+        } else {
+          //do mach making and submit to partners
+          callback(undefined, obj);
+        }
+      });
+    } catch (ex) {
+      console.log(ex);
+    }
+    callback(undefined, obj);
+  };
+
   function _call(
     channel,
     space,
@@ -82,6 +114,15 @@ function submitoffer() {
       console.log("space : ", JSON.stringify(space));
       async.parallel(
         {
+          publish: function (callback) {
+            publish_content(
+              channel,
+              data,
+              data._id,
+              configuration.request_stage,
+              callback
+            );
+          },
           changerequesttoofferrecieved: function (callback) {
             changestage(
               channel,

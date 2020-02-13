@@ -39,8 +39,9 @@ function change_stage() {
           body: {
             id: data._id,
             fields: {
-              stage: configuration.stage
-            }
+
+            },
+            status: "published"
           },
           userId: userId,
           spaceId: space._id
@@ -63,11 +64,11 @@ function change_stage() {
   }
   return {
     call: _call,
-    onOk: function(callback) {
+    onOk: function (callback) {
       _onOkCallBack = callback;
       return this;
     },
-    onError: function(callback) {
+    onError: function (callback) {
       _onOkCallBack = callback;
       return this;
     }

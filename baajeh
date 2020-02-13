@@ -1,5 +1,4 @@
-db.spaces.update({_id : ObjectId("5d26e793375e9b001745e84d")}, {"_id": ObjectId("5d26e793375e9b001745e84d"),"roles": [
-        {
+db.spaces.update({_id : ObjectId("5d26e793375e9b001745e84d")}, {"_id": ObjectId("5d26e793375e9b001745e84d"),"roles":[        {
             "name": "customers",
             "title": {
                 "en": "مشتریان"
@@ -41,12 +40,36 @@ db.spaces.update({_id : ObjectId("5d26e793375e9b001745e84d")}, {"_id": ObjectId(
     ],
     "webhooks": [
         {
+            "name": "ارسال به  پشتیبانی",
+            "description": "ارسال درخواست به پشتیبانی",
+            "type": "sendmail",
+            "trigger": {
+                "events": [
+                    "contentcreated"
+                ],
+                "contentTypes": [
+                    "5db301d0a1696b0017ba429d",
+                    "5d26e7e9375e9b001745e84e"
+                ]
+            },
+            "sys": {
+                "issuer": "5cf3883dafd0b9001708b27e",
+                "issueData": "2019-10-06T16:27:46.419Z"
+            },
+            "config": {
+                "text": "وقت بخیر\r\n شما یک درخواست جدید دارید. برای مشاهده درخواست به اپلیکیشن مراجعه کنید \r\nتیم پشتیبانی باجه \r\n 28421147-021",
+                "subject": "درخواست جدید",
+                "from": "info@baajeh.com",
+                "to" : "vamsepar@gmail.com"
+            }
+        },
+        {
             "name": "ارسال به همکاران فعال",
             "description": "ارسال درخواست به همکاران و تغییر وضعیت درخواست",
             "type": "submitrequest",
             "trigger": {
                 "events": [
-                    "contentsubmitted"
+                    "contentpublished"
                 ],
                 "contentTypes": [
                     "5db301d0a1696b0017ba429d",
@@ -106,28 +129,6 @@ db.spaces.update({_id : ObjectId("5d26e793375e9b001745e84d")}, {"_id": ObjectId(
             "config": {
                 "message": "{@sys.link}",
                 "template": "requestsubmitted"
-            }
-        },
-        {
-            "name": "ارسال پیام درخواست جدید",
-            "description": "ارسال پیام درخواست جدید به همکاران",
-            "type": "notifypartner",
-            "trigger": {
-                "events": [
-                    "contentsubmitted"
-                ],
-                "contentTypes": [
-                    "5d62814c0490c200171f0d71"
-                ]
-            },
-            "sys": {
-                "issuer": "5cf3883dafd0b9001708b27e",
-                "issueData": "2019-10-06T16:27:46.419Z"
-            },
-            "config": {
-                "body": "شما یک درخواست جدید دارید. برای مشاهده درخواست به اپلیکیشن مراجعه کنید",
-                "title": "درخواست جدید",
-                "color": "#0000ff"
             }
         },
         {
@@ -219,6 +220,29 @@ db.spaces.update({_id : ObjectId("5d26e793375e9b001745e84d")}, {"_id": ObjectId(
             }
         },
         {
+            "name": "ایمیل رد شدن پیشنهاد توسط مشتری",
+            "description": "ارسال ایمیل رد شدن پیشنهاد توسط مشتری",
+            "type": "notifypartnerbyemail",
+            "trigger": {
+                "events": [
+                    "oncustomerrejectedanoffer"
+                ],
+                "contentTypes": [
+                    "5dbc1e873474cb0017d6e06a",
+                    "5d3fc7397029a500172c5c46"
+                ]
+            },
+            "sys": {
+                "issuer": "5cf3883dafd0b9001708b27e",
+                "issueData": "2019-10-06T16:27:46.419Z"
+            },
+            "config": {
+                "text": "وقت بخیر\r\n  پیشنهاد شما توسط مشتری رد شد. برای پیگیری به اپلیکیشن مراجعه کنید \r\nتیم پشتیبانی باجه \r\n 28421147-021",
+                "subject": "پیشنهاد شما توسط مشتری رد شد",
+                "from": "info@baajeh.com"
+            }
+        },
+        {
             "name": "اطلاع رسانی پیشنهاد به درخواست کننده",
             "description": "ارسال پیام اطلاع رسانی پیشنهاد به درخواست کننده",
             "type": "notifycustomerbyemail",
@@ -264,11 +288,8 @@ db.spaces.update({_id : ObjectId("5d26e793375e9b001745e84d")}, {"_id": ObjectId(
             }
         }
     ],
-    "modules": [
-        {}
-    ],
+    "modules": [],
     "name": "Financing app",
     "type": "free",
     "owner": ObjectId("5d26e792eb761b0017f195ae"),
-    "__v": 0
-}, {upsert : true})
+    "__v": 0}, {upsert : true})

@@ -2,6 +2,7 @@ const config = require("../../config");
 const uuidv4 = require("uuid/v4");
 const Partners = require("../../models/content");
 const Tokens = require("../../models/token");
+const async = require("async");
 function notifypartnerbyemail() {
   var _onOkCallBack;
   function _onOk(result) {
@@ -25,6 +26,37 @@ function notifypartnerbyemail() {
       channel.sendToQueue(rpcQueue, Buffer.from(JSON.stringify(message)));
     });
 
+  var publish_content = function (channel, obj, objId, stage, callback) {
+    try {
+      console.log("Publish content started");
+
+      sendRPCMessage(
+        channel,
+        {
+          body: {
+            id: objId
+          },
+          userId: obj.sys.issuer,
+          spaceId: obj.sys.spaceId
+        },
+        "publishcontent"
+      ).then(result => {
+        var obj = JSON.parse(result.toString("utf8"));
+        if (!obj.success) {
+          if (obj.error) {
+            callback(err, undefined);
+            return;
+          }
+        } else {
+          //do mach making and submit to partners
+          callback(undefined, obj);
+        }
+      });
+    } catch (ex) {
+      console.log(ex);
+    }
+    callback(undefined, obj);
+  };
   function _call(
     channel,
     space,
@@ -55,28 +87,52 @@ function notifypartnerbyemail() {
               : data.fields.name.en
                 ? data.fields.name.en
                 : data.fields.name;
-            sendRPCMessage(
-              channel,
-              {
-                body: {
-                  clientId: space._id.toString(),
-                  contentType: contentType ? contentType._id.toString() : "",
-                  data: data,
-                  userId: partner._id,
-                  message: configuration
-                }
+
+            async.parallel({
+              publish: function (callback) {
+                publish_content(
+                  channel,
+                  data,
+                  data._id,
+                  configuration.request_stage,
+                  callback
+                );
               },
-              "sendEmailMessage"
-            ).then(result => {
-              var obj = JSON.parse(result.toString("utf8"));
-              if (!obj.success) {
-                _onError(obj, undefined);
-                console.log(obj);
-              } else {
-                console.log("Email message sent");
-                _onOk(undefined, obj);
+              sendmail: function (callback) {
+                sendRPCMessage(
+                  channel,
+                  {
+                    body: {
+                      clientId: space._id.toString(),
+                      contentType: contentType ? contentType._id.toString() : "",
+                      data: data,
+                      userId: partner._id,
+                      message: configuration
+                    }
+                  },
+                  "sendEmailMessage"
+                ).then(result => {
+                  var obj = JSON.parse(result.toString("utf8"));
+                  if (!obj.success) {
+                    callback(obj, undefined);
+                    console.log(obj);
+                  } else {
+                    console.log("Email message sent");
+                    callback(undefined, obj);
+                  }
+                });
               }
-            });
+            }
+            ),
+              (error, results) => {
+                if (error) {
+                  console.log(JSON.stringify(error));
+                  _onError({ success: false, error: error });
+                }
+                else
+                  _onOk(error, results);
+              }
+
           }
         });
       }
