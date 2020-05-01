@@ -2,11 +2,11 @@ var mongoose = require("mongoose");
 var connections = require("./connections");
 
 var dev_db_url =
-  "mongodb://fakhrad:logrezaee24359@ds243188-a0.mlab.com:43188,ds243188-a1.mlab.com:43188/content-db?replicaSet=rs-ds243188";
+  "mongodb://root:lcIocRs19ldjHduyJhLCKNvK@s8.liara.ir:33178/content-db?authSource=admin&replicaSet=rs0";
 var mongoDB = process.env.DATABASE_URL || dev_db_url;
 
 var auth_db_url =
-  "mongodb://fakhrad:logrezaee24359@ds127995.mlab.com:27995/authdb";
+  "mongodb://root:m1x7EWlgEmr46Tn8ji2sxBzf@s8.liara.ir:32764/authdb?authSource=admin&replicaSet=rs0";
 var authDB = process.env.AUTHDB_URL || auth_db_url;
 var db1 = mongoose.createConnection(mongoDB);
 var db2 = mongoose.createConnection(authDB);

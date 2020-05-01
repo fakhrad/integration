@@ -1,0 +1,174 @@
+db.templates.update({_id : ObjectId("5d99e2607c213e55613ac413")}, { "_id" : ObjectId("5d99e2607c213e55613ac413"), 
+    "name": "requestform",
+    "title": {
+        "en": "Request form",
+        "fa": "فرم درخواست"
+    },
+    "description": {
+        "en": "Request form",
+        "fa": "فرم درخواست"
+    },
+    "category": {
+        "en": "RFQ",
+        "fa": "RFQ"
+    },
+    "icon": "icon-database",
+    "allowCustomFields": true,
+    "fields": [
+        {
+            "name": "name",
+            "title": {
+                "fa": "عنوان درخواست",
+                "en": "نام درخواست کننده"
+            },
+            "description": {
+                "fa": "عنوان درخواست",
+                "en": "نام درخواست کننده وام"
+            },
+            "type": "string",
+            "isTranslate": false,
+            "appearance": "text",
+            "isRequired": true,
+            "inVisible": false,
+            "isMultiLine": false,
+            "order" : 0,
+            "section" : "Details",
+            "limit": {
+                "type": "noMoreThan",
+                "max": "150"
+            },
+            "value": "name"
+        },
+        {
+            "name": "description",
+            "title": {
+                "fa": "شرح درخواست",
+                "en": "Request description"
+            },
+            "description": {
+                "fa": "شرح درخواست",
+                "en": "Request description"
+            },
+            "type": "string",
+            "isTranslate": false,
+            "appearance": "text",
+            "isRequired": true,
+            "inVisible": false,
+            "isMultiLine": true,
+            "order" : 0,
+            "section" : "MoreInfo",
+            "limit": {
+                "type": "noMoreThan",
+                "max": "250"
+            },
+            "value": "description"
+        },
+        {
+            "name": "stage",
+            "title": {
+                "fa": "وضعیت",
+                "en": "Stage"
+            },
+            "description": {
+                "fa": "وضعیت یا مرحله درخواست ",
+                "en": "Stage of the request"
+            },
+            "type": "keyValue",
+            "isTranslate": false,
+            "appearance": "default",
+            "isRequired": false,
+            "inVisible": false,
+            "isList": false,
+            "options": [
+                {
+                    "value": "reviewed",
+                    "selected": true
+                },
+                {
+                    "value": "approved"
+                },
+                {
+                    "value": "rejected"
+                },
+                {
+                    "value": "submitted",
+                    "selected": false
+                },
+                {
+                    "value": "offerreceived"
+                },
+                {
+                    "value": "offeraccepted"
+                },
+                {
+                    "value": "won"
+                },
+                {
+                    "value": "lost"
+                }
+            ]
+        },
+        {
+            "name": "src",
+            "title": {
+                "fa": "منبع درخواست",
+                "en": "منبع درخواست"
+            },
+            "description": {
+                "fa": "منبع درخواست",
+                "en": "منبع درخواست"
+            },
+            "type": "jsonObject",
+            "isTranslate": false,
+            "appearance": "text"
+        },
+        {
+            "name": "contact",
+            "title": {
+                "fa": "اطلاعات تماس",
+                "en": "اطلاعات تماس"
+            },
+            "description": {
+                "fa": "اطلاعات تماس",
+                "en": "اطلاعات تماس"
+            },
+            "type": "reference",
+            "isTranslate": false,
+            "appearance": "default",
+            "isRequired": true,
+            "inVisible": false,
+            "isList": false,
+            "order" : 0,
+            "section" : "Contact",
+            "references": [
+                "5dc272d251b8310017540c51"
+            ],
+            "fields": [
+                "name",
+                "phonenumber",
+                "email",
+                "location",
+                "avatar"
+            ]
+        },
+        {
+            "name": "attachments",
+            "title": {
+                "fa": "فایلها",
+                "en": "فایلها"
+            },
+            "description": {
+                "fa": "فایلها",
+                "en": "فایلها"
+            },
+            "type": "media",
+            "isTranslate": false,
+            "appearance": "default",
+            "isRequired": false,
+            "order" : 0,
+            "section" : "Contact",
+            "inVisible": false,
+            "isList": true
+        }
+    ]
+} , {upsert : true})

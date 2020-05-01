@@ -20,14 +20,18 @@ require("./integrators/internal/notifypartnerbyesms");
 require("./integrators/internal/offeraccepted");
 require("./integrators/internal/notifycustomerbyemail");
 require("./integrators/internal/notifycustomerbysms");
+require("./integrators/internal/submitloanrequest");
+require("./integrators/internal/submitinvestmentrequest");
+require("./integrators/internal/submitstartuprequest");
 var rabbitHost =
   process.env.RABBITMQ_HOST ||
-  "amqp://fakhrad:logrezaee24359@queue.reqter.com";
+  "amqp://fakhrad:logrezaee24359@queue.reqter.com:5672";
 //var rabbitHost = process.env.RABBITMQ_HOST || "amqp://localhost:5672";
 
 var amqpConn = null;
+
 function start() {
-  console.log("Start connecting : " + process.env.RABBITMQ_HOST);
+  console.log("Start connecting : " + rabbitHost);
   amqp.connect(rabbitHost, (err, conn) => {
     if (err) {
       console.error("[AMQP]", err.message);
@@ -49,6 +53,7 @@ function start() {
     whenConnected();
   });
 }
+
 function whenConnected() {
   amqpConn.createChannel((err, ch) => {
     if (err) {
@@ -66,8 +71,9 @@ function whenConnected() {
     ch.responseEmitter.setMaxListeners(0);
     ch.consume(
       REPLY_QUEUE,
-      msg => ch.responseEmitter.emit(msg.properties.correlationId, msg.content),
-      { noAck: true }
+      msg => ch.responseEmitter.emit(msg.properties.correlationId, msg.content), {
+        noAck: true
+      }
     );
     console.log("Client connected.");
     this.channel = ch;
@@ -94,7 +100,10 @@ function whenConnected() {
       durable: false
     });
 
-    ch.assertQueue("", { durable: false, exclusive: true }, (err, q) => {
+    ch.assertQueue("", {
+      durable: false,
+      exclusive: true
+    }, (err, q) => {
       if (!err) {
         ch.bindQueue(q.queue, "contentservice", "contentpublished");
         ch.consume(
@@ -106,8 +115,7 @@ function whenConnected() {
             );
             try {
               try {
-                async.parallel(
-                  {
+                async.parallel({
                     space: function (callback) {
                       Spaces.findById(req.body.sys.spaceId).exec(
                         (err, space) => {
@@ -131,7 +139,9 @@ function whenConnected() {
                       );
                     },
                     token: function (callback) {
-                      Tokens.findOne({ userId: req.body.sys.issuer })
+                      Tokens.findOne({
+                          userId: req.body.sys.issuer
+                        })
                         .sort("-issueDate")
                         .exec((err, token) => {
                           if (err) {
@@ -191,15 +201,17 @@ function whenConnected() {
             } catch (ex) {
               console.log(ex);
             }
-          },
-          {
+          }, {
             noAck: true
           }
         );
       }
     });
 
-    ch.assertQueue("", { durable: false, exclusive: true }, (err, q) => {
+    ch.assertQueue("", {
+      durable: false,
+      exclusive: true
+    }, (err, q) => {
       if (!err) {
         ch.bindQueue(q.queue, "contentservice", "contentcreated");
         ch.consume(
@@ -211,8 +223,7 @@ function whenConnected() {
             );
             try {
               try {
-                async.parallel(
-                  {
+                async.parallel({
                     space: function (callback) {
                       Spaces.findById(req.body.sys.spaceId).exec(
                         (err, space) => {
@@ -236,7 +247,9 @@ function whenConnected() {
                       );
                     },
                     token: function (callback) {
-                      Tokens.findOne({ userId: req.body.sys.issuer })
+                      Tokens.findOne({
+                          userId: req.body.sys.issuer
+                        })
                         .sort("-issueDate")
                         .exec((err, token) => {
                           if (err) {
@@ -296,14 +309,16 @@ function whenConnected() {
             } catch (ex) {
               console.log(ex);
             }
-          },
-          {
+          }, {
             noAck: true
           }
         );
       }
     });
-    ch.assertQueue("", { durable: false, exclusive: true }, (err, q) => {
+    ch.assertQueue("", {
+      durable: false,
+      exclusive: true
+    }, (err, q) => {
       if (!err) {
         ch.bindQueue(q.queue, "contentservice", "contentsubmitted");
         ch.consume(
@@ -315,8 +330,7 @@ function whenConnected() {
             );
             try {
               try {
-                async.parallel(
-                  {
+                async.parallel({
                     space: function (callback) {
                       Spaces.findById(req.body.data.sys.spaceId).exec(
                         (err, space) => {
@@ -340,7 +354,9 @@ function whenConnected() {
                       );
                     },
                     token: function (callback) {
-                      Tokens.findOne({ userId: req.body.data.sys.issuer })
+                      Tokens.findOne({
+                          userId: req.body.data.sys.issuer
+                        })
                         .sort("-issueDate")
                         .exec((err, token) => {
                           if (err) {
@@ -400,15 +416,17 @@ function whenConnected() {
             } catch (ex) {
               console.log(ex);
             }
-          },
-          {
+          }, {
             noAck: true
           }
         );
       }
     });
 
-    ch.assertQueue("", { durable: false, exclusive: true }, (err, q) => {
+    ch.assertQueue("", {
+      durable: false,
+      exclusive: true
+    }, (err, q) => {
       if (!err) {
         ch.bindQueue(q.queue, "requester", "oncustomeracceptedanoffer");
         ch.consume(
@@ -420,8 +438,7 @@ function whenConnected() {
             );
             try {
               try {
-                async.parallel(
-                  {
+                async.parallel({
                     space: function (callback) {
                       Spaces.findById(req.body.data.sys.spaceId).exec(
                         (err, space) => {
@@ -445,7 +462,9 @@ function whenConnected() {
                       );
                     },
                     token: function (callback) {
-                      Tokens.findOne({ userId: req.body.data.sys.issuer })
+                      Tokens.findOne({
+                          userId: req.body.data.sys.issuer
+                        })
                         .sort("-issueDate")
                         .exec((err, token) => {
                           if (err) {
@@ -505,15 +524,17 @@ function whenConnected() {
             } catch (ex) {
               console.log(ex);
             }
-          },
-          {
+          }, {
             noAck: true
           }
         );
       }
     });
 
-    ch.assertQueue("", { durable: false, exclusive: true }, (err, q) => {
+    ch.assertQueue("", {
+      durable: false,
+      exclusive: true
+    }, (err, q) => {
       if (!err) {
         ch.bindQueue(q.queue, "requester", "oncustomerrejectedanoffer");
         ch.consume(
@@ -525,8 +546,7 @@ function whenConnected() {
             );
             try {
               try {
-                async.parallel(
-                  {
+                async.parallel({
                     space: function (callback) {
                       Spaces.findById(req.body.data.sys.spaceId).exec(
                         (err, space) => {
@@ -550,7 +570,9 @@ function whenConnected() {
                       );
                     },
                     token: function (callback) {
-                      Tokens.findOne({ userId: req.body.data.sys.issuer })
+                      Tokens.findOne({
+                          userId: req.body.data.sys.issuer
+                        })
                         .sort("-issueDate")
                         .exec((err, token) => {
                           if (err) {
@@ -610,14 +632,16 @@ function whenConnected() {
             } catch (ex) {
               console.log(ex);
             }
-          },
-          {
+          }, {
             noAck: true
           }
         );
       }
     });
-    ch.assertQueue("", { durable: false, exclusive: true }, (err, q) => {
+    ch.assertQueue("", {
+      durable: false,
+      exclusive: true
+    }, (err, q) => {
       if (!err) {
         ch.bindQueue(q.queue, "requester", "onofferissued");
         ch.consume(
@@ -629,8 +653,7 @@ function whenConnected() {
             );
             try {
               try {
-                async.parallel(
-                  {
+                async.parallel({
                     space: function (callback) {
                       Spaces.findById(req.body.data.sys.spaceId).exec(
                         (err, space) => {
@@ -654,7 +677,9 @@ function whenConnected() {
                       );
                     },
                     token: function (callback) {
-                      Tokens.findOne({ userId: req.body.data.sys.issuer })
+                      Tokens.findOne({
+                          userId: req.body.data.sys.issuer
+                        })
                         .sort("-issueDate")
                         .exec((err, token) => {
                           if (err) {
@@ -714,8 +739,7 @@ function whenConnected() {
             } catch (ex) {
               console.log(ex);
             }
-          },
-          {
+          }, {
             noAck: true
           }
         );

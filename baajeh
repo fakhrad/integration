@@ -1,295 +1,344 @@
-db.spaces.update({_id : ObjectId("5d26e793375e9b001745e84d")}, {"_id": ObjectId("5d26e793375e9b001745e84d"),"roles":[        {
-            "name": "customers",
-            "title": {
-                "en": "مشتریان"
-            },
-            "type": "reader"
-        },
-        {
-            "name": "partners",
-            "title": {
-                "en": "همکاران"
-            },
-            "type": "reader"
-        },
-        {
-            "name": "admin",
-            "title": {
-                "en": "مدیر سیستم"
-            },
-            "type": "admin"
-        }
-    ],
-    "locales": [
-        {
-            "locale": "fa",
-            "fallback": "fa",
-            "includeInResponce": true,
-            "editable": true,
-            "requiredFields": true,
-            "default": true
-        },
-        {
-            "locale": "en",
-            "fallback": "fa",
-            "includeInResponce": true,
-            "editable": true,
-            "requiredFields": true,
-            "default": false
-        }
-    ],
-    "webhooks": [
-        {
-            "name": "ارسال به  پشتیبانی",
-            "description": "ارسال درخواست به پشتیبانی",
-            "type": "sendmail",
-            "trigger": {
-                "events": [
-                    "contentcreated"
-                ],
-                "contentTypes": [
-                    "5db301d0a1696b0017ba429d",
-                    "5d26e7e9375e9b001745e84e"
-                ]
-            },
-            "sys": {
-                "issuer": "5cf3883dafd0b9001708b27e",
-                "issueData": "2019-10-06T16:27:46.419Z"
-            },
-            "config": {
-                "text": "وقت بخیر\r\n شما یک درخواست جدید دارید. برای مشاهده درخواست به اپلیکیشن مراجعه کنید \r\nتیم پشتیبانی باجه \r\n 28421147-021",
-                "subject": "درخواست جدید",
-                "from": "info@baajeh.com",
-                "to" : "vamsepar@gmail.com"
-            }
-        },
-        {
-            "name": "ارسال به همکاران فعال",
-            "description": "ارسال درخواست به همکاران و تغییر وضعیت درخواست",
-            "type": "submitrequest",
-            "trigger": {
-                "events": [
-                    "contentpublished"
-                ],
-                "contentTypes": [
-                    "5db301d0a1696b0017ba429d",
-                    "5d26e7e9375e9b001745e84e"
-                ]
-            },
-            "sys": {
-                "issuer": "5cf3883dafd0b9001708b27e",
-                "issueData": "2019-10-06T16:27:46.419Z"
-            },
-            "config": {
-                "request_type": "5d3fc9b97029a500172c5c48",
-                "request_stage": "5d3fc2f77029a500172c5c3e",
-                "spo_id": "5d62814c0490c200171f0d71",
-                "spo_stage": "5d6e8accc51a44001703df19"
-            }
-        },
-        {
-            "name": "ارسال پیشنهاد به درخواست کننده",
-            "description": "ارسال پیشنهاد به درخواست کننده",
-            "type": "submitoffer",
-            "trigger": {
-                "events": [
-                    "contentsubmitted"
-                ],
-                "contentTypes": [
-                    "5dbc1e873474cb0017d6e06a",
-                    "5d3fc7397029a500172c5c46"
-                ]
-            },
-            "sys": {
-                "issuer": "5cf3883dafd0b9001708b27e",
-                "issueData": "2019-10-06T16:27:46.419Z"
-            },
-            "config": {
-                "request_stage": "5d3fc30a7029a500172c5c3f",
-                "offer_stage": "5d514934780b9c00170233e8"
-            }
-        },
-        {
-            "name": "ارسال پیام به درخواست کننده",
-            "description": "ارسال پیام به درخواست کننده",
-            "type": "kavenegarsms",
-            "trigger": {
-                "events": [
-                    "contentsubmitted"
-                ],
-                "contentTypes": [
-                    "5db301d0a1696b0017ba429d",
-                    "5d26e7e9375e9b001745e84e"
-                ]
-            },
-            "sys": {
-                "issuer": "5cf3883dafd0b9001708b27e",
-                "issueData": "2019-10-06T16:27:46.419Z"
-            },
-            "config": {
-                "message": "{@sys.link}",
-                "template": "requestsubmitted"
-            }
-        },
-        {
-            "name": "ارسال ایمیل درخواست جدید",
-            "description": "ارسال پیام درخواست جدید به همکاران",
-            "type": "notifypartnerbyemail",
-            "trigger": {
-                "events": [
-                    "contentsubmitted"
-                ],
-                "contentTypes": [
-                    "5d62814c0490c200171f0d71"
-                ]
-            },
-            "sys": {
-                "issuer": "5cf3883dafd0b9001708b27e",
-                "issueData": "2019-10-06T16:27:46.419Z"
-            },
-            "config": {
-                "text": "وقت بخیر\r\n شما یک درخواست جدید دارید. برای مشاهده درخواست به اپلیکیشن مراجعه کنید \r\nتیم پشتیبانی باجه \r\n 28421147-021",
-                "subject": "درخواست جدید",
-                "from": "info@baajeh.com"
-            }
-        },
-        {
-            "name": "ارسال پیام درخواست جدید",
-            "description": "ارسال پیام درخواست جدید به همکاران",
-            "type": "notifypartnerbysms",
-            "trigger": {
-                "events": [
-                    "contentsubmitted"
-                ],
-                "contentTypes": [
-                    "5d62814c0490c200171f0d71"
-                ]
-            },
-            "sys": {
-                "issuer": "5cf3883dafd0b9001708b27e",
-                "issueData": "2019-10-06T16:27:46.419Z"
-            },
-            "config": {
-                "message": "1",
-                "template": "newrequest"
-            }
-        },
-        {
-            "name": "قبول شدن پیشنهاد توسط مشتری",
-            "description": "ارسال پیام پذیرفته شدن پیشنهاد توسط مشتری",
-            "type": "notifypartnerbysms",
-            "trigger": {
-                "events": [
-                    "oncustomeracceptedanoffer"
-                ],
-                "contentTypes": [
-                    "5dbc1e873474cb0017d6e06a",
-                    "5d3fc7397029a500172c5c46"
-                ]
-            },
-            "sys": {
-                "issuer": "5cf3883dafd0b9001708b27e",
-                "issueData": "2019-10-06T16:27:46.419Z"
-            },
-            "config": {
-                "message": "1",
-                "template": "offeraccepted"
-            }
-        },
-        {
-            "name": "ایمیل قبول شدن پیشنهاد توسط مشتری",
-            "description": "ارسال ایمیل پذیرفته شدن پیشنهاد توسط مشتری",
-            "type": "notifypartnerbyemail",
-            "trigger": {
-                "events": [
-                    "oncustomeracceptedanoffer"
-                ],
-                "contentTypes": [
-                    "5dbc1e873474cb0017d6e06a",
-                    "5d3fc7397029a500172c5c46"
-                ]
-            },
-            "sys": {
-                "issuer": "5cf3883dafd0b9001708b27e",
-                "issueData": "2019-10-06T16:27:46.419Z"
-            },
-            "config": {
-                "text": "وقت بخیر\r\n  تبریک پیشنهاد شما پذیرفته شد. برای پیگیری به اپلیکیشن مراجعه کنید \r\nتیم پشتیبانی باجه \r\n 28421147-021",
-                "subject": "تبریک! پیشنهاد شما پذیرفته شد",
-                "from": "info@baajeh.com"
-            }
-        },
-        {
-            "name": "ایمیل رد شدن پیشنهاد توسط مشتری",
-            "description": "ارسال ایمیل رد شدن پیشنهاد توسط مشتری",
-            "type": "notifypartnerbyemail",
-            "trigger": {
-                "events": [
-                    "oncustomerrejectedanoffer"
-                ],
-                "contentTypes": [
-                    "5dbc1e873474cb0017d6e06a",
-                    "5d3fc7397029a500172c5c46"
-                ]
-            },
-            "sys": {
-                "issuer": "5cf3883dafd0b9001708b27e",
-                "issueData": "2019-10-06T16:27:46.419Z"
-            },
-            "config": {
-                "text": "وقت بخیر\r\n  پیشنهاد شما توسط مشتری رد شد. برای پیگیری به اپلیکیشن مراجعه کنید \r\nتیم پشتیبانی باجه \r\n 28421147-021",
-                "subject": "پیشنهاد شما توسط مشتری رد شد",
-                "from": "info@baajeh.com"
-            }
-        },
-        {
-            "name": "اطلاع رسانی پیشنهاد به درخواست کننده",
-            "description": "ارسال پیام اطلاع رسانی پیشنهاد به درخواست کننده",
-            "type": "notifycustomerbyemail",
-            "trigger": {
-                "events": [
-                    "offerissued"
-                ],
-                "contentTypes": [
-                    "5dbc1e873474cb0017d6e06a",
-                    "5d3fc7397029a500172c5c46"
-                ]
-            },
-            "sys": {
-                "issuer": "5cf3883dafd0b9001708b27e",
-                "issueData": "2019-10-06T16:27:46.419Z"
-            },
-            "config": {
-                "subject": "ارسال پیشنهاد جدید در باجه",
-                "text": "شما یک پیشنهاد جدید در باجه دارید. برای مشاهده به قسمت پیگیری درخواستها در اپلیکیشن مراجعه کنید.\r\nباجه",
-                "from" : "info@baajeh.com"
-            }
-        },
-        {
-            "name": "اطلاع رسانی پیشنهاد به درخواست کننده",
-            "description": "ارسال ایمیل اطلاع رسانی پیشنهاد به درخواست کننده",
-            "type": "notifycusomterbysms",
-            "trigger": {
-                "events": [
-                    "offerissued"
-                ],
-                "contentTypes": [
-                    "5dbc1e873474cb0017d6e06a",
-                    "5d3fc7397029a500172c5c46"
-                ]
-            },
-            "sys": {
-                "issuer": "5cf3883dafd0b9001708b27e",
-                "issueData": "2019-10-06T16:27:46.419Z"
-            },
-            "config": {
-                "message" : "1",
-                "template" : "offerissued"
-            }
-        }
-    ],
-    "modules": [],
-    "name": "Financing app",
-    "type": "free",
-    "owner": ObjectId("5d26e792eb761b0017f195ae"),
-    "__v": 0}, {upsert : true})
+db.spaces.update({_id : ObjectId("5d26e793375e9b001745e84d")}, {"_id": ObjectId("5d26e793375e9b001745e84d"),
+  "roles": [
+    {
+      "name": "customers",
+      "title": {
+        "en": "مشتریان"
+      },
+      "type": "reader"
+    },
+    {
+      "name": "partners",
+      "title": {
+        "en": "همکاران"
+      },
+      "type": "reader"
+    },
+    {
+      "name": "admin",
+      "title": {
+        "en": "مدیر سیستم"
+      },
+      "type": "admin"
+    }
+  ],
+  "locales": [
+    {
+      "locale": "fa",
+      "fallback": "fa",
+      "includeInResponce": true,
+      "editable": true,
+      "requiredFields": true,
+      "default": true
+    },
+    {
+      "locale": "en",
+      "fallback": "fa",
+      "includeInResponce": true,
+      "editable": true,
+      "requiredFields": true,
+      "default": false
+    }
+  ],
+  "webhooks": [
+    {
+      "name": "ارسال به  پشتیبانی",
+      "description": "ارسال درخواست به پشتیبانی",
+      "type": "sendmail",
+      "trigger": {
+        "events": [
+          "contentcreated"
+        ],
+        "contentTypes": [
+          "5db301d0a1696b0017ba429d",
+          "5d26e7e9375e9b001745e84e"
+        ]
+      },
+      "sys": {
+        "issuer": "5cf3883dafd0b9001708b27e",
+        "issueData": "2019-10-06T16:27:46.419Z"
+      },
+      "config": {
+        "text": "وقت بخیر\r\n شما یک درخواست جدید دارید. برای مشاهده درخواست به اپلیکیشن مراجعه کنید \r\nتیم پشتیبانی باجه \r\n 28421147-021",
+        "subject": "درخواست جدید",
+        "from": "info@baajeh.com",
+        "to": "vamsepar@gmail.com"
+      }
+    },
+    {
+      "name": "ارسال درخواست وام به همکاران مرتبط",
+      "description": "ارسال درخواست وام به همکاران و تغییر وضعیت درخواست",
+      "type": "submitloanrequest",
+      "trigger": {
+        "events": [
+          "contentpublished"
+        ],
+        "contentTypes": [
+          "5d26e7e9375e9b001745e84e"
+        ]
+      },
+      "sys": {
+        "issuer": "5cf3883dafd0b9001708b27e",
+        "issueData": "2019-10-06T16:27:46.419Z"
+      },
+      "config": {
+        "request_type": "5d3fc9b97029a500172c5c48",
+        "request_stage": "5d3fc2f77029a500172c5c3e",
+        "spo_id": "5d62814c0490c200171f0d71",
+        "spo_stage": "5d6e8accc51a44001703df19"
+      }
+    },
+    {
+      "name": "ارسال درخواست سرمایه گذاری به همکاران مرتبط",
+      "description": "ارسال درخواست سرمایه گذاری به همکاران و تغییر وضعیت درخواست",
+      "type": "submitinvestmentrequest",
+      "trigger": {
+        "events": [
+          "contentpublished"
+        ],
+        "contentTypes": [
+          "5db301d0a1696b0017ba429d"
+        ]
+      },
+      "sys": {
+        "issuer": "5cf3883dafd0b9001708b27e",
+        "issueData": "2019-10-06T16:27:46.419Z"
+      },
+      "config": {
+        "request_type": "5d3fc9b97029a500172c5c48",
+        "request_stage": "5d3fc2f77029a500172c5c3e",
+        "spo_id": "5d62814c0490c200171f0d71",
+        "spo_stage": "5d6e8accc51a44001703df19"
+      }
+    },
+    {
+      "name": "ارسال به همکاران فعال",
+      "description": "ارسال درخواست به همکاران و تغییر وضعیت درخواست",
+      "type": "submitrequest",
+      "trigger": {
+        "events": [
+          "contentpublished"
+        ],
+        "contentTypes": [          
+        ]
+      },
+      "sys": {
+        "issuer": "5cf3883dafd0b9001708b27e",
+        "issueData": "2019-10-06T16:27:46.419Z"
+      },
+      "config": {
+        "request_type": "5d3fc9b97029a500172c5c48",
+        "request_stage": "5d3fc2f77029a500172c5c3e",
+        "spo_id": "5d62814c0490c200171f0d71",
+        "spo_stage": "5d6e8accc51a44001703df19"
+      }
+    },
+    {
+      "name": "ارسال پیشنهاد به درخواست کننده",
+      "description": "ارسال پیشنهاد به درخواست کننده",
+      "type": "submitoffer",
+      "trigger": {
+        "events": [
+          "contentsubmitted"
+        ],
+        "contentTypes": [
+          "5dbc1e873474cb0017d6e06a",
+          "5d3fc7397029a500172c5c46"
+        ]
+      },
+      "sys": {
+        "issuer": "5cf3883dafd0b9001708b27e",
+        "issueData": "2019-10-06T16:27:46.419Z"
+      },
+      "config": {
+        "request_stage": "5d3fc30a7029a500172c5c3f",
+        "offer_stage": "5d514934780b9c00170233e8"
+      }
+    },
+    {
+      "name": "ارسال پیام به درخواست کننده",
+      "description": "ارسال پیام به درخواست کننده",
+      "type": "kavenegarsms",
+      "trigger": {
+        "events": [
+          "contentsubmitted"
+        ],
+        "contentTypes": [
+          "5db301d0a1696b0017ba429d",
+          "5d26e7e9375e9b001745e84e"
+        ]
+      },
+      "sys": {
+        "issuer": "5cf3883dafd0b9001708b27e",
+        "issueData": "2019-10-06T16:27:46.419Z"
+      },
+      "config": {
+        "message": "{@sys.link}",
+        "template": "requestsubmitted"
+      }
+    },
+    {
+      "name": "ارسال ایمیل درخواست جدید",
+      "description": "ارسال پیام درخواست جدید به همکاران",
+      "type": "notifypartnerbyemail",
+      "trigger": {
+        "events": [
+          "contentsubmitted"
+        ],
+        "contentTypes": [
+          "5d62814c0490c200171f0d71"
+        ]
+      },
+      "sys": {
+        "issuer": "5cf3883dafd0b9001708b27e",
+        "issueData": "2019-10-06T16:27:46.419Z"
+      },
+      "config": {
+        "text": "وقت بخیر\r\n شما یک درخواست جدید دارید. برای مشاهده درخواست به اپلیکیشن مراجعه کنید \r\nتیم پشتیبانی باجه \r\n 28421147-021",
+        "subject": "درخواست جدید",
+        "from": "info@baajeh.com"
+      }
+    },
+    {
+      "name": "ارسال پیام درخواست جدید",
+      "description": "ارسال پیام درخواست جدید به همکاران",
+      "type": "notifypartnerbysms",
+      "trigger": {
+        "events": [
+          "contentsubmitted"
+        ],
+        "contentTypes": [
+          "5d62814c0490c200171f0d71"
+        ]
+      },
+      "sys": {
+        "issuer": "5cf3883dafd0b9001708b27e",
+        "issueData": "2019-10-06T16:27:46.419Z"
+      },
+      "config": {
+        "message": "1",
+        "template": "newrequest"
+      }
+    },
+    {
+      "name": "قبول شدن پیشنهاد توسط مشتری",
+      "description": "ارسال پیام پذیرفته شدن پیشنهاد توسط مشتری",
+      "type": "notifypartnerbysms",
+      "trigger": {
+        "events": [
+          "oncustomeracceptedanoffer"
+        ],
+        "contentTypes": [
+          "5dbc1e873474cb0017d6e06a",
+          "5d3fc7397029a500172c5c46"
+        ]
+      },
+      "sys": {
+        "issuer": "5cf3883dafd0b9001708b27e",
+        "issueData": "2019-10-06T16:27:46.419Z"
+      },
+      "config": {
+        "message": "1",
+        "template": "offeraccepted"
+      }
+    },
+    {
+      "name": "ایمیل قبول شدن پیشنهاد توسط مشتری",
+      "description": "ارسال ایمیل پذیرفته شدن پیشنهاد توسط مشتری",
+      "type": "notifypartnerbyemail",
+      "trigger": {
+        "events": [
+          "oncustomeracceptedanoffer"
+        ],
+        "contentTypes": [
+          "5dbc1e873474cb0017d6e06a",
+          "5d3fc7397029a500172c5c46"
+        ]
+      },
+      "sys": {
+        "issuer": "5cf3883dafd0b9001708b27e",
+        "issueData": "2019-10-06T16:27:46.419Z"
+      },
+      "config": {
+        "text": "وقت بخیر\r\n  تبریک پیشنهاد شما پذیرفته شد. برای پیگیری به اپلیکیشن مراجعه کنید \r\nتیم پشتیبانی باجه \r\n 28421147-021",
+        "subject": "تبریک! پیشنهاد شما پذیرفته شد",
+        "from": "info@baajeh.com"
+      }
+    },
+    {
+      "name": "ایمیل رد شدن پیشنهاد توسط مشتری",
+      "description": "ارسال ایمیل رد شدن پیشنهاد توسط مشتری",
+      "type": "notifypartnerbyemail",
+      "trigger": {
+        "events": [
+          "oncustomerrejectedanoffer"
+        ],
+        "contentTypes": [
+          "5dbc1e873474cb0017d6e06a",
+          "5d3fc7397029a500172c5c46"
+        ]
+      },
+      "sys": {
+        "issuer": "5cf3883dafd0b9001708b27e",
+        "issueData": "2019-10-06T16:27:46.419Z"
+      },
+      "config": {
+        "text": "وقت بخیر\r\n  پیشنهاد شما توسط مشتری رد شد. برای پیگیری به اپلیکیشن مراجعه کنید \r\nتیم پشتیبانی باجه \r\n 28421147-021",
+        "subject": "پیشنهاد شما توسط مشتری رد شد",
+        "from": "info@baajeh.com"
+      }
+    },
+    {
+      "name": "اطلاع رسانی پیشنهاد به درخواست کننده",
+      "description": "ارسال پیام اطلاع رسانی پیشنهاد به درخواست کننده",
+      "type": "notifycustomerbyemail",
+      "trigger": {
+        "events": [
+          "offerissued"
+        ],
+        "contentTypes": [
+          "5dbc1e873474cb0017d6e06a",
+          "5d3fc7397029a500172c5c46"
+        ]
+      },
+      "sys": {
+        "issuer": "5cf3883dafd0b9001708b27e",
+        "issueData": "2019-10-06T16:27:46.419Z"
+      },
+      "config": {
+        "subject": "ارسال پیشنهاد جدید در باجه",
+        "text": "شما یک پیشنهاد جدید در باجه دارید. برای مشاهده به قسمت پیگیری درخواستها در اپلیکیشن مراجعه کنید.\r\nباجه",
+        "from": "info@baajeh.com"
+      }
+    },
+    {
+      "name": "اطلاع رسانی پیشنهاد به درخواست کننده",
+      "description": "ارسال ایمیل اطلاع رسانی پیشنهاد به درخواست کننده",
+      "type": "notifycusomterbysms",
+      "trigger": {
+        "events": [
+          "offerissued"
+        ],
+        "contentTypes": [
+          "5dbc1e873474cb0017d6e06a",
+          "5d3fc7397029a500172c5c46"
+        ]
+      },
+      "sys": {
+        "issuer": "5cf3883dafd0b9001708b27e",
+        "issueData": "2019-10-06T16:27:46.419Z"
+      },
+      "config": {
+        "message": "1",
+        "template": "offerissued"
+      }
+    }
+  ],
+  "modules": [
+    
+  ],
+  "name": "Financing app",
+  "type": "premium",
+  "owner": ObjectId("5d26e792eb761b0017f195ae"),
+  "__v": 0
+}, {upsert : true})

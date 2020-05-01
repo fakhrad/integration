@@ -48,9 +48,9 @@ db.spaces.update({_id : ObjectId("5cf3883dcce4de00174d48cf")}, { "_id" : ObjectI
     ],
     "webhooks": [
         {
-            "name": "ارسال به همکاران",
+            "name": "ارسال درخواست به همکاران",
             "description": "ارسال درخواست به همکاران و تغییر وضعیت درخواست",
-            "type": "submitrequest",
+            "type": "submitstartuprequest",
             "trigger": {
                 "events": [
                     "contentpublished"
@@ -146,6 +146,27 @@ db.spaces.update({_id : ObjectId("5cf3883dcce4de00174d48cf")}, { "_id" : ObjectI
         {
             "name": "ارسال پیام درخواست جدید",
             "description": "ارسال پیام درخواست جدید به همکاران",
+            "type": "notifypartnerbysms",
+            "trigger": {
+                "events": [
+                    "contentsubmitted"
+                ],
+                "contentTypes": [
+                    "5d58df5a74c64b0017fb45d8"
+                ]
+            },
+            "sys": {
+                "issuer": "5cf3883dafd0b9001708b27e",
+                "issueData": "2019-10-06T16:27:46.419Z"
+            },
+            "config": {
+                "message": "۱",
+                "template": "startupspacenewrequest"
+            }
+        },
+        {
+            "name": "ارسال ایمیل درخواست جدید",
+            "description": "ارسال ایمیل درخواست جدید به همکاران",
             "type": "notifypartnerbyemail",
             "trigger": {
                 "events": [
