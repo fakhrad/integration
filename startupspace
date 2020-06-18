@@ -296,5 +296,6 @@ db.spaces.update({_id : ObjectId("5cf3883dcce4de00174d48cf")}, { "_id" : ObjectI
         }
     ],
     "name": "Startup Space",
+    "storage" : "database",
     "type": "free", "owner" : ObjectId("5cf3883dafd0b9001708b27e"), "__v" : 17 }
 , {upsert : true})

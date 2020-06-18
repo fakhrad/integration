@@ -2,7 +2,7 @@ var mongoose = require("mongoose");
 var connections = require("./connections");
 
 var dev_db_url =
-  "mongodb://root:lcIocRs19ldjHduyJhLCKNvK@s8.liara.ir:33178/content-db?authSource=admin&replicaSet=rs0";
+  "mongodb://fakhrad:logrezaee24359@ds135036.mlab.com:35036/content-db";
 var mongoDB = process.env.DATABASE_URL || dev_db_url;
 
 var auth_db_url =
