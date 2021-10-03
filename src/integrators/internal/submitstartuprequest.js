@@ -62,6 +62,10 @@ function submitstartuprequest() {
         for (i = 0; i < cts.length; i++) {
           try {
             var content = cts[i];
+            if (content.fields.state != "active") {
+              console.log("Inactive partner : " + content.fields.name.toString())
+              continue;
+            }
             if (!content.fields.city || !obj.fields.city) {
               console.log("Invalid city : " + content.fields.name.toString())
               continue;
@@ -167,26 +171,26 @@ function submitstartuprequest() {
     try {
       console.log("Submit trigger started.");
       async.parallel({
-          approvereqeust: function (callback) {
-            changerequeststage(
-              channel,
-              data,
-              data._id,
-              configuration.request_stage,
-              callback
-            );
-          },
-          sendtopartners: function (callback) {
-            submittopartners(
-              channel,
-              configuration.request_type,
-              configuration.spo_stage,
-              configuration.spo_id,
-              data,
-              callback
-            );
-          }
+        approvereqeust: function (callback) {
+          changerequeststage(
+            channel,
+            data,
+            data._id,
+            configuration.request_stage,
+            callback
+          );
         },
+        sendtopartners: function (callback) {
+          submittopartners(
+            channel,
+            configuration.request_type,
+            configuration.spo_stage,
+            configuration.spo_id,
+            data,
+            callback
+          );
+        }
+      },
         (error, results) => {
           _onOk(error, results);
         }

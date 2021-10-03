@@ -4,7 +4,7 @@
   "description": "Integration  service",
   "main": "index.js",
   "scripts": {
-    "start": "node ./src/bin/www",
+    "start": "node ./src/bin/www.cjs",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
